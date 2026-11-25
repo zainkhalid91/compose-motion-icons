@@ -35,6 +35,26 @@ class RegistryTest {
     }
 
     @Test
+    fun categoriesAreKnownAndMatchTheRegistry() {
+        val unknown = IconCatalog.entries.filter { it.category !in IconCatalog.categories }.map { it.name }
+        assertTrue(unknown.isEmpty(), "icons with a category missing from IconCatalog.categories: $unknown")
+        val rows = File(root, "ICONS.md").readLines()
+            .mapNotNull { Regex("""^\|\s*\d+\s*\|\s*`?(\w+)`?\s*\|\s*(\w+)\s*\|""").find(it) }
+            .associate { it.groupValues[1] to it.groupValues[2] }
+        for (e in IconCatalog.entries) assertEquals(e.category, rows[e.name], "category of ${e.name} in ICONS.md")
+    }
+
+    @Test
+    fun webPreviewIsUpToDate() {
+        // The web page shows these GIFs while the live gallery loads. Re-run recordFrames and
+        // tools/make-media.sh after adding an icon.
+        val manifest = File(root, "docs/media/icons.json")
+        assertEquals(IconCatalog.previewManifest(), manifest.takeIf { it.exists() }?.readText(), "docs/media/icons.json is stale")
+        val missing = IconCatalog.entries.filterNot { File(root, "docs/media/${it.name}.gif").exists() }.map { it.name }
+        assertTrue(missing.isEmpty(), "missing preview GIFs in docs/media: $missing")
+    }
+
+    @Test
     fun registryMatchesCatalog() {
         assertEquals(IconCatalog.entries.map { it.id to it.name }, registry, "ICONS.md rows must match IconCatalog, in order")
     }

@@ -67,11 +67,16 @@ tasks.register<JavaExec>("recordBatchReel") {
     args(layout.buildDirectory.dir("batchreel").get().asFile.absolutePath)
 }
 
-// The web page shows real download progress. It needs each .wasm file's size up front, because
+// The page shows real download progress. It needs each .wasm file's size up front, because
 // a compressed response doesn't say how many bytes it will unpack to.
+// The page also shows every icon's GIF straight away, grouped by category, while the wasm loads.
 tasks.named("wasmJsBrowserDistribution") {
     val dist = layout.buildDirectory.dir("dist/wasmJs/productionExecutable").get().asFile
+    val media = rootProject.layout.projectDirectory.dir("docs/media").asFile
     doLast {
+        val preview = File(dist, "preview").apply { mkdirs() }
+        media.listFiles { f -> f.name.endsWith("Icon.gif") || f.name == "icons.json" }.orEmpty()
+            .forEach { it.copyTo(File(preview, it.name), overwrite = true) }
         val wasm = dist.listFiles { f -> f.extension == "wasm" }.orEmpty().sortedBy { it.name }
         File(dist, "sizes.json").writeText(wasm.joinToString(",", "{", "}") { "\"${it.name}\":${it.length()}" })
     }

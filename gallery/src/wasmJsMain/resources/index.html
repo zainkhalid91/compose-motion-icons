@@ -7,23 +7,29 @@
     <meta name="description" content="Icons that animate between states, written in pure Jetpack Compose and Compose Multiplatform. Tap any icon.">
     <style>
         html, body { margin: 0; height: 100%; background: #0F1115; overflow: hidden; }
-        #loading { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center;
-                   justify-content: center; gap: 18px; padding: 0 16px; text-align: center;
-                   color: #8A90A0; font: 14px system-ui, -apple-system, sans-serif; transition: opacity .25s; }
-        #loading h1 { margin: 0; color: #fff; font-size: 18px; font-weight: 600; }
-        .ring { position: relative; width: 96px; height: 96px; }
-        .ring svg { width: 96px; height: 96px; transform: rotate(-90deg); }
-        .ring circle { fill: none; stroke-width: 6; stroke-linecap: round; }
-        .ring .track { stroke: #22262F; }
-        .ring .bar { stroke: #7C9CFF; stroke-dasharray: 264; stroke-dashoffset: 264; transition: stroke-dashoffset .15s linear; }
-        .ring .pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-                     color: #fff; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
-        .ring.busy svg { animation: spin 1s linear infinite; }
-        .ring.busy .bar { stroke-dashoffset: 190; }
-        @keyframes spin { to { transform: rotate(270deg); } }
-        #status { font-variant-numeric: tabular-nums; min-height: 1.4em; }
-        #loading.error .ring { display: none; }
-        #loading.error #status { color: #F87171; max-width: 360px; line-height: 1.5; }
+        /* Shown at once: every icon as a small looping GIF, grouped by category. The live gallery
+           (the library itself, compiled to WebAssembly) replaces it as soon as it has loaded. */
+        #preview { position: fixed; inset: 0; overflow-y: auto; z-index: 2; background: #0F1115;
+                   color: #8A90A0; font: 14px system-ui, -apple-system, sans-serif; transition: opacity .3s; }
+        #preview .wrap { max-width: 1180px; margin: 0 auto; padding: 20px 16px 40px; }
+        #preview h1 { margin: 0 0 6px; color: #fff; font-size: 26px; font-weight: 700; }
+        #preview p { margin: 0; line-height: 1.45; }
+        #bar { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: #7C9CFF; z-index: 3;
+               transition: width .15s linear; }
+        #status { margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px;
+                  border: 1px solid #252A34; border-radius: 999px; font-size: 13px; font-variant-numeric: tabular-nums; }
+        #status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #7C9CFF;
+                          animation: blink 1s ease-in-out infinite; }
+        @keyframes blink { 50% { opacity: .25; } }
+        #preview.error #status { color: #F87171; border-color: #5B2A2A; border-radius: 12px; }
+        #preview.error #status::before { display: none; }
+        #preview h2 { margin: 26px 0 10px; color: #fff; font-size: 17px; font-weight: 600; }
+        #preview h2 span { margin-left: 8px; color: #8A90A0; font-size: 13px; font-weight: 400; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 12px; }
+        .card { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 18px 0 16px;
+                background: #171A21; border: 1px solid #252A34; border-radius: 18px; font-size: 12px; }
+        /* The GIFs are rendered on the page background; lighten drops that square onto the card. */
+        .card img { width: 56px; height: 56px; mix-blend-mode: lighten; }
     </style>
     <script>
         // Real download progress: every .wasm response is counted byte by byte as it arrives.
@@ -43,20 +49,14 @@
                 if (done) return;
                 var got = sum(loaded);
                 var total = Math.max(expected, sum(totals), got);
-                var bar = document.querySelector('#loading .bar');
-                var pct = document.querySelector('#loading .pct');
+                var bar = document.getElementById('bar');
                 var status = document.getElementById('status');
                 if (!bar || !total) return;
                 var f = Math.min(1, got / total);
-                if (f >= 1) {
-                    document.querySelector('#loading .ring').classList.add('busy');
-                    pct.textContent = '';
-                    status.textContent = 'Starting the icons…';
-                    return;
-                }
-                bar.style.strokeDashoffset = String(264 * (1 - f));
-                pct.textContent = Math.floor(f * 100) + '%';
-                status.textContent = 'Downloading ' + mb(got) + ' / ' + mb(total) + ' MB';
+                bar.style.width = (f * 100).toFixed(1) + '%';
+                status.textContent = f >= 1
+                    ? 'Starting the live gallery…'
+                    : 'Loading the live gallery so you can tap them · ' + Math.floor(f * 100) + '% · ' + mb(got) + ' / ' + mb(total) + ' MB';
             };
             window.__galleryDone = function () { done = true; };
 
@@ -90,12 +90,13 @@
             };
 
             window.addEventListener('error', function (e) {
-                var l = document.getElementById('loading');
-                if (!l || done) return;
+                var p = document.getElementById('preview');
+                if (!p || done) return;
                 if (typeof WebAssembly === 'undefined' || /wasm|WebAssembly/i.test(String(e.message))) {
-                    l.classList.add('error');
+                    p.classList.add('error');
+                    document.getElementById('bar').style.display = 'none';
                     document.getElementById('status').textContent =
-                        'This browser can’t run the gallery. It needs WebAssembly GC: Chrome 119+, Firefox 120+ or Safari 18.2+.';
+                        'This browser can’t run the live gallery (it needs WebAssembly GC: Chrome 119+, Firefox 120+ or Safari 18.2+). The previews below still play.';
                 }
             });
         })();
@@ -103,21 +104,58 @@
     <script type="application/javascript" src="gallery.js"></script>
 </head>
 <body>
-<div id="loading">
-    <h1>Compose Motion Icons</h1>
-    <div class="ring">
-        <svg viewBox="0 0 96 96"><circle class="track" cx="48" cy="48" r="42"/><circle class="bar" cx="48" cy="48" r="42"/></svg>
-        <div class="pct">0%</div>
+<div id="bar"></div>
+<div id="preview">
+    <div class="wrap">
+        <h1>Compose Motion Icons</h1>
+        <p id="lead">Icons that animate between states. Pure Compose, no Lottie.</p>
+        <div id="status">Loading the live gallery so you can tap them…</div>
+        <div id="groups"></div>
     </div>
-    <div id="status">Connecting…</div>
 </div>
 <script>
+    fetch('preview/icons.json').then(function (r) { return r.json(); }).then(function (groups) {
+        var root = document.getElementById('groups');
+        var count = 0;
+        groups.forEach(function (g) {
+            var h = document.createElement('h2');
+            h.textContent = g.category;
+            var n = document.createElement('span');
+            n.textContent = g.icons.length;
+            h.appendChild(n);
+            var grid = document.createElement('div');
+            grid.className = 'grid';
+            g.icons.forEach(function (name) {
+                var card = document.createElement('div');
+                card.className = 'card';
+                var img = document.createElement('img');
+                img.src = 'preview/' + name + '.gif';
+                img.alt = name;
+                img.width = 56;
+                img.height = 56;
+                card.appendChild(img);
+                card.appendChild(document.createTextNode(name.replace(/Icon$/, '')));
+                grid.appendChild(card);
+                count++;
+            });
+            root.appendChild(h);
+            root.appendChild(grid);
+        });
+        document.getElementById('lead').textContent =
+            count + ' icons that animate between states. Pure Compose, no Lottie.';
+    }).catch(function () {});
+
     new MutationObserver(function (_, observer) {
         if (document.querySelector('canvas')) {
-            window.__galleryDone && window.__galleryDone();
-            var l = document.getElementById('loading');
-            if (l) { l.style.opacity = '0'; setTimeout(function () { l.remove(); }, 260); }
             observer.disconnect();
+            window.__galleryDone && window.__galleryDone();
+            // Give Compose a moment to draw its first frame before the preview fades.
+            setTimeout(function () {
+                var p = document.getElementById('preview');
+                var bar = document.getElementById('bar');
+                if (bar) bar.remove();
+                if (p) { p.style.opacity = '0'; setTimeout(function () { p.remove(); }, 320); }
+            }, 250);
         }
     }).observe(document.body, { childList: true, subtree: true });
 </script>

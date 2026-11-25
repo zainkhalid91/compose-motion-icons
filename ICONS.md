@@ -52,6 +52,16 @@ build if it drifts from `IconCatalog` or from the public functions in `:icons`.
 | 28 | `CastIcon` | Media | screen floods with colour from the corner while the waves ripple out in turn | 2026-W49 |
 | 29 | `EqualizerIcon` | Media | four bars dance on their own rhythms while playing, sink to rest when paused (loops) | 2026-W49 |
 | 30 | `ApertureIcon` | Camera | six blades twist and close towards the centre, and open again | 2026-W49 |
+| 31 | `MailIcon` | Messaging | flap folds up and back, then a letter rises out of the pocket | 2026-W50 |
+| 32 | `PhoneIcon` | Messaging | handset shakes, then swings down into the red hang-up position with overshoot | 2026-W50 |
+| 33 | `ThumbUpIcon` | Social | thumb lifts and wobbles on its wrist while it fills from the bottom like a level | 2026-W50 |
+| 34 | `TypingIcon` | Messaging | three dots pop into a bubble one by one, then bob in a wave while typing (loops) | 2026-W50 |
+| 35 | `ReplyIcon` | Messaging | for reply-all a second arrowhead peels out from under the first, lagging behind | 2026-W50 |
+| 36 | `CartIcon` | Shopping | an item drops into the basket per added count, the cart dips and the badge bumps | 2026-W50 |
+| 37 | `SyncIcon` | Status | arrows tighten and spin while syncing; on stop they finish the turn and settle with overshoot (loops) | 2026-W50 |
+| 38 | `FilterSortIcon` | Shopping | funnel unfolds from the rim down into three sort lines, longest first | 2026-W50 |
+| 39 | `UploadIcon` | Status | progress ring fills round a rising arrow; at 100% the arrow hops and the ring pulses | 2026-W50 |
+| 40 | `GiftIcon` | Shopping | lid pops off and hangs tilted, the bow springs and light spills out of the box | 2026-W50 |
 
 ## Backlog (to reach 50)
 
@@ -60,10 +70,7 @@ picking one.
 
 - **Media controls (more):** skip next/previous (triangles slide through), rewind/forward 10 s
   (arrow circles with the number), subtitles (lines type into the box).
-- **Messaging:** mail (envelope flap opens, letter rises), attach (paperclip bends), thumbs-up
-  (thumb lifts with a wobble), reply (arrow curls back), typing (bubble with a tick).
-- **Commerce:** cart (item drops in, count badge bumps), refresh to done (arrows spin, then a
-  tick), filter to sort (funnel splits into lines), upload (arrow leaves the tray), coupon cut.
+- **Shopping (more):** coupon (dashed line cuts), wallet (card slides in), receipt.
 - **Devices:** battery (level fills, bolt when charging), bluetooth on/off, flashlight beam,
   airplane mode, cellular bars.
 - **Editing:** pencil to save tick, link/unlink (chain breaks apart), pin (pushes in), zoom in/out

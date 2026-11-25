@@ -28,7 +28,7 @@ dependencyResolutionManagement {
 
 // build.gradle.kts
 dependencies {
-    implementation("com.github.zainkhalid91.compose-motion-icons:icons:0.2.0")
+    implementation("com.github.zainkhalid91.compose-motion-icons:icons:0.3.0")
 }
 ```
 
@@ -58,18 +58,59 @@ that light up take an accent (`activeColor`, `badgeColor`, `doneColor`).
 
 ## The icons
 
+### Navigation
+
 | | | | |
 |:-:|:-:|:-:|:-:|
-| ![](docs/media/MenuCloseIcon.gif)<br>`MenuCloseIcon(open)` | ![](docs/media/PlayPauseIcon.gif)<br>`PlayPauseIcon(playing)` | ![](docs/media/HeartIcon.gif)<br>`HeartIcon(liked)` | ![](docs/media/BellIcon.gif)<br>`BellIcon(badge)` |
-| ![](docs/media/LockIcon.gif)<br>`LockIcon(locked)` | ![](docs/media/EyeIcon.gif)<br>`EyeIcon(visible)` | ![](docs/media/ThemeIcon.gif)<br>`ThemeIcon(dark)` | ![](docs/media/SearchCloseIcon.gif)<br>`SearchCloseIcon(active)` |
-| ![](docs/media/CheckboxIcon.gif)<br>`CheckboxIcon(checked)` | ![](docs/media/BookmarkIcon.gif)<br>`BookmarkIcon(saved)` | ![](docs/media/VolumeIcon.gif)<br>`VolumeIcon(level)` | ![](docs/media/WifiIcon.gif)<br>`WifiIcon(strength)` |
-| ![](docs/media/MicIcon.gif)<br>`MicIcon(muted)` | ![](docs/media/AddCloseIcon.gif)<br>`AddCloseIcon(open)` | ![](docs/media/CopyIcon.gif)<br>`CopyIcon(copied)` | ![](docs/media/DownloadIcon.gif)<br>`DownloadIcon(done)` |
-| ![](docs/media/SendIcon.gif)<br>`SendIcon(sent)` | ![](docs/media/StarIcon.gif)<br>`StarIcon(starred)` | ![](docs/media/TrashIcon.gif)<br>`TrashIcon(open)` | ![](docs/media/GridListIcon.gif)<br>`GridListIcon(grid)` |
-| ![](docs/media/RecordIcon.gif)<br>`RecordIcon(recording)` | ![](docs/media/RepeatIcon.gif)<br>`RepeatIcon(enabled, one)` | ![](docs/media/ShuffleIcon.gif)<br>`ShuffleIcon(on)` | ![](docs/media/FullscreenIcon.gif)<br>`FullscreenIcon(fullscreen)` |
-| ![](docs/media/CameraFlipIcon.gif)<br>`CameraFlipIcon(front)` | ![](docs/media/SpeedIcon.gif)<br>`SpeedIcon(level)` | ![](docs/media/PipIcon.gif)<br>`PipIcon(pip)` | ![](docs/media/CastIcon.gif)<br>`CastIcon(connected)` |
-| ![](docs/media/EqualizerIcon.gif)<br>`EqualizerIcon(playing)` | ![](docs/media/ApertureIcon.gif)<br>`ApertureIcon(open)` | | |
+| ![](docs/media/MenuCloseIcon.gif)<br>`MenuCloseIcon(open)` | ![](docs/media/SearchCloseIcon.gif)<br>`SearchCloseIcon(active)` | ![](docs/media/AddCloseIcon.gif)<br>`AddCloseIcon(open)` | ![](docs/media/GridListIcon.gif)<br>`GridListIcon(grid)` |
 
-What each one does is in [ICONS.md](ICONS.md). 30 today, 50 on the way.
+### Media
+
+| | | | |
+|:-:|:-:|:-:|:-:|
+| ![](docs/media/PlayPauseIcon.gif)<br>`PlayPauseIcon(playing)` | ![](docs/media/VolumeIcon.gif)<br>`VolumeIcon(level)` | ![](docs/media/MicIcon.gif)<br>`MicIcon(muted)` | ![](docs/media/RecordIcon.gif)<br>`RecordIcon(recording)` |
+| ![](docs/media/RepeatIcon.gif)<br>`RepeatIcon(enabled, one)` | ![](docs/media/ShuffleIcon.gif)<br>`ShuffleIcon(on)` | ![](docs/media/FullscreenIcon.gif)<br>`FullscreenIcon(fullscreen)` | ![](docs/media/SpeedIcon.gif)<br>`SpeedIcon(level)` |
+| ![](docs/media/PipIcon.gif)<br>`PipIcon(pip)` | ![](docs/media/CastIcon.gif)<br>`CastIcon(connected)` | ![](docs/media/EqualizerIcon.gif)<br>`EqualizerIcon(playing)` | |
+
+### Camera
+
+| | | | |
+|:-:|:-:|:-:|:-:|
+| ![](docs/media/CameraFlipIcon.gif)<br>`CameraFlipIcon(front)` | ![](docs/media/ApertureIcon.gif)<br>`ApertureIcon(open)` |  | |
+
+### Social
+
+| | | | |
+|:-:|:-:|:-:|:-:|
+| ![](docs/media/HeartIcon.gif)<br>`HeartIcon(liked)` | ![](docs/media/BookmarkIcon.gif)<br>`BookmarkIcon(saved)` | ![](docs/media/SendIcon.gif)<br>`SendIcon(sent)` | ![](docs/media/StarIcon.gif)<br>`StarIcon(starred)` |
+| ![](docs/media/ThumbUpIcon.gif)<br>`ThumbUpIcon(liked)` |  |  | |
+
+### Messaging
+
+| | | | |
+|:-:|:-:|:-:|:-:|
+| ![](docs/media/MailIcon.gif)<br>`MailIcon(open)` | ![](docs/media/PhoneIcon.gif)<br>`PhoneIcon(inCall)` | ![](docs/media/TypingIcon.gif)<br>`TypingIcon(typing)` | ![](docs/media/ReplyIcon.gif)<br>`ReplyIcon(all)` |
+
+### Shopping
+
+| | | | |
+|:-:|:-:|:-:|:-:|
+| ![](docs/media/CartIcon.gif)<br>`CartIcon(count)` | ![](docs/media/FilterSortIcon.gif)<br>`FilterSortIcon(sort)` | ![](docs/media/GiftIcon.gif)<br>`GiftIcon(open)` | |
+
+### Status
+
+| | | | |
+|:-:|:-:|:-:|:-:|
+| ![](docs/media/BellIcon.gif)<br>`BellIcon(badge)` | ![](docs/media/CheckboxIcon.gif)<br>`CheckboxIcon(checked)` | ![](docs/media/WifiIcon.gif)<br>`WifiIcon(strength)` | ![](docs/media/CopyIcon.gif)<br>`CopyIcon(copied)` |
+| ![](docs/media/DownloadIcon.gif)<br>`DownloadIcon(done)` | ![](docs/media/SyncIcon.gif)<br>`SyncIcon(syncing)` | ![](docs/media/UploadIcon.gif)<br>`UploadIcon(progress)` | |
+
+### System
+
+| | | | |
+|:-:|:-:|:-:|:-:|
+| ![](docs/media/LockIcon.gif)<br>`LockIcon(locked)` | ![](docs/media/EyeIcon.gif)<br>`EyeIcon(visible)` | ![](docs/media/ThemeIcon.gif)<br>`ThemeIcon(dark)` | ![](docs/media/TrashIcon.gif)<br>`TrashIcon(open)` |
+
+What each one does is in [ICONS.md](ICONS.md). 40 today, 50 on the way.
 
 ## Built for real screens
 

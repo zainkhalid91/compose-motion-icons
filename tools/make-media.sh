@@ -17,6 +17,7 @@ for dir in "$frames"/*Icon/; do
     -vf "scale=100:100:flags=lanczos,split[a][b];[a]palettegen=max_colors=64[p];[b][p]paletteuse" \
     -loop 0 "$out/$name.gif"
 done
+cp "$frames/icons.json" "$out/icons.json"
 if [ -d gallery/build/demoreel ]; then
   ffmpeg -loglevel error -y -framerate 30 -i gallery/build/demoreel/%04d.png \
     -c:v libx264 -pix_fmt yuv420p -crf 18 -movflags +faststart "$out/demo-reel.mp4"

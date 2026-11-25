@@ -1,0 +1,10 @@
+[
+  {"category":"Navigation","icons":["MenuCloseIcon","SearchCloseIcon","AddCloseIcon","GridListIcon"]},
+  {"category":"Media","icons":["PlayPauseIcon","VolumeIcon","MicIcon","RecordIcon","RepeatIcon","ShuffleIcon","FullscreenIcon","SpeedIcon","PipIcon","CastIcon","EqualizerIcon"]},
+  {"category":"Camera","icons":["CameraFlipIcon","ApertureIcon"]},
+  {"category":"Social","icons":["HeartIcon","BookmarkIcon","SendIcon","StarIcon","ThumbUpIcon"]},
+  {"category":"Messaging","icons":["MailIcon","PhoneIcon","TypingIcon","ReplyIcon"]},
+  {"category":"Shopping","icons":["CartIcon","FilterSortIcon","GiftIcon"]},
+  {"category":"Status","icons":["BellIcon","CheckboxIcon","WifiIcon","CopyIcon","DownloadIcon","SyncIcon","UploadIcon"]},
+  {"category":"System","icons":["LockIcon","EyeIcon","ThemeIcon","TrashIcon"]}
+]

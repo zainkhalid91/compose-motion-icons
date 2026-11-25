@@ -20,42 +20,57 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.zainkhalid91.motionicons.ApertureIcon
-import io.github.zainkhalid91.motionicons.CameraFlipIcon
-import io.github.zainkhalid91.motionicons.CastIcon
-import io.github.zainkhalid91.motionicons.EqualizerIcon
-import io.github.zainkhalid91.motionicons.FullscreenIcon
+import io.github.zainkhalid91.motionicons.CartIcon
+import io.github.zainkhalid91.motionicons.FilterSortIcon
+import io.github.zainkhalid91.motionicons.GiftIcon
+import io.github.zainkhalid91.motionicons.MailIcon
 import io.github.zainkhalid91.motionicons.MotionIconStyle
-import io.github.zainkhalid91.motionicons.PipIcon
-import io.github.zainkhalid91.motionicons.PlayPauseIcon
+import io.github.zainkhalid91.motionicons.PhoneIcon
 import io.github.zainkhalid91.motionicons.ProvideMotionIconStyle
-import io.github.zainkhalid91.motionicons.RecordIcon
-import io.github.zainkhalid91.motionicons.RepeatIcon
-import io.github.zainkhalid91.motionicons.ShuffleIcon
-import io.github.zainkhalid91.motionicons.SpeedIcon
+import io.github.zainkhalid91.motionicons.ReplyIcon
+import io.github.zainkhalid91.motionicons.SyncIcon
+import io.github.zainkhalid91.motionicons.ThumbUpIcon
+import io.github.zainkhalid91.motionicons.TypingIcon
+import io.github.zainkhalid91.motionicons.UploadIcon
 import java.io.File
 import kotlin.math.roundToInt
 
-// Scene lengths in seconds: player hook, the new ten, three close-ups, outro.
-private val BatchScenes = floatArrayOf(4.2f, 4.4f, 2.3f, 2.3f, 2.3f, 3.6f)
-
-private const val BatchName = "Media and camera"
-private const val BatchId = "2026-W49"
-
-/**
- * Renders the 1080 x 1350 video for the latest batch, frame by frame. Usage: batchreel <outDir>.
- * tools/make-media.sh turns the frames into docs/media/batch-reel.mp4.
+/*
+ * The LinkedIn video for the latest batch, 1080 x 1350 (4:5, the tallest a feed shows in full).
+ * Built for a phone with the sound off: the first frame is already moving under a bold headline
+ * (it doubles as the thumbnail), text is large, each scene says one thing, story-style bars show
+ * how long is left, and it ends on the install line and where to find the link.
  */
+
+private class Scene(val seconds: Float, val chip: String?, val headline: String)
+
+private val Scenes = listOf(
+    Scene(3.0f, null, "Chat and shop icons\nthat actually move"),
+    Scene(3.2f, "Messaging", "Mail opens.\nCalls hang up."),
+    Scene(3.2f, "Shopping", "Items drop\ninto the cart"),
+    Scene(3.2f, "Status", "Sync spins,\nthen settles"),
+    Scene(4.4f, "In your app", "Drop them into\na real screen"),
+    Scene(4.0f, null, "40 icons.\nFree and open source."),
+)
+
+private const val BatchId = "2026-W50"
+private const val Version = "0.3.0"
+private val Accent = Color(0xFF7C9CFF)
+
+/** Renders the video frame by frame. Usage: batchreel <outDir>. tools/make-media.sh encodes it. */
 fun main(args: Array<String>) {
     val out = File(args.getOrElse(0) { "build/batchreel" }).apply { mkdirs() }
-    val total = (BatchScenes.sum() * Fps).roundToInt()
+    out.listFiles()?.forEach { it.delete() }
+    val total = (Scenes.sumOf { it.seconds.toDouble() } * Fps).roundToInt()
     val time = mutableFloatStateOf(0f)
     VirtualScene(1080, 1350, 3f) { BatchReel(time.floatValue) }.use { scene ->
         for (i in 0 until total) {
@@ -70,115 +85,124 @@ fun main(args: Array<String>) {
 private fun BatchReel(t: Float) {
     var start = 0f
     var index = 0
-    while (index < BatchScenes.size - 1 && t >= start + BatchScenes[index]) {
-        start += BatchScenes[index]
+    while (index < Scenes.size - 1 && t >= start + Scenes[index].seconds) {
+        start += Scenes[index].seconds
         index++
     }
     val s = t - start
-    val batch = IconCatalog.entries.filter { it.batch == BatchId }
-    val (title, code) = when (index) {
-        0 -> "Your video player, animated" to "FullscreenIcon(fullscreen = isFullscreen)"
-        1 -> "10 new icons: $BatchName" to "EqualizerIcon(playing = isPlaying)"
-        2 -> "Recording starts with a ripple" to "RecordIcon(recording = isRecording)"
-        3 -> "Shutters twist shut" to "ApertureIcon(open = isOpen)"
-        4 -> "Casting floods the screen" to "CastIcon(connected = isCasting)"
-        else -> "${IconCatalog.entries.size} icons now, 50 on the way" to "implementation(\"com.github.zainkhalid91.\n    compose-motion-icons:icons:0.2.0\")"
-    }
+    val scene = Scenes[index]
+    // Each scene's text eases in over its first quarter second, except the first: frame one is
+    // the thumbnail, so the hook headline is there from the start.
+    val enter = if (index == 0) 1f else (s / 0.25f).coerceIn(0f, 1f)
+    val last = index == Scenes.lastIndex
     ProvideMotionIconStyle(MotionIconStyle(color = GalleryPalette[0])) {
-        Column(
-            Modifier.fillMaxSize().background(Background).padding(horizontal = 24.dp, vertical = 22.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            BasicText("Compose Motion Icons", style = TextStyle(color = Muted, fontSize = 15.sp, fontWeight = FontWeight.SemiBold))
-            Spacer(Modifier.height(8.dp))
-            BasicText(title, style = TextStyle(color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold))
-            Spacer(Modifier.height(16.dp))
+        Column(Modifier.fillMaxSize().background(Background).padding(horizontal = 22.dp, vertical = 18.dp)) {
+            StoryBars(index, s / scene.seconds)
+            Spacer(Modifier.height(12.dp))
+            BasicText("Compose Motion Icons", style = TextStyle(color = Muted, fontSize = 13.sp, fontWeight = FontWeight.SemiBold))
+            Spacer(Modifier.height(10.dp))
+            Box(Modifier.height(24.dp)) {
+                if (scene.chip != null) {
+                    BasicText(
+                        scene.chip,
+                        modifier = Modifier
+                            .alpha(enter)
+                            .background(Accent.copy(alpha = 0.16f), RoundedCornerShape(50))
+                            .padding(horizontal = 10.dp, vertical = 4.dp),
+                        style = TextStyle(color = Accent, fontSize = 11.sp, fontWeight = FontWeight.Bold),
+                    )
+                }
+            }
+            Spacer(Modifier.height(6.dp))
+            BasicText(
+                scene.headline,
+                modifier = Modifier.alpha(enter).padding(top = (6f * (1f - enter)).dp).height(72.dp),
+                style = TextStyle(color = Color.White, fontSize = 27.sp, lineHeight = 34.sp, fontWeight = FontWeight.ExtraBold),
+            )
+            Spacer(Modifier.height(12.dp))
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .height(250.dp)
+                    .height(if (last) 164.dp else 200.dp)
                     .background(Card, RoundedCornerShape(24.dp))
                     .border(1.dp, CardBorder, RoundedCornerShape(24.dp)),
                 contentAlignment = Alignment.Center,
             ) {
                 key(index) {
                     when (index) {
-                        0 -> PlayerHook(s)
-                        1 -> NewTen(s, batch)
-                        2 -> PairScene(s, { on, m -> RecordIcon(on, m) }, { on, m -> EqualizerIcon(on, m) })
-                        3 -> PairScene(s, { on, m -> ApertureIcon(!on, m) }, { on, m -> CameraFlipIcon(on, m) })
-                        4 -> PairScene(s, { on, m -> CastIcon(on, m) }, { on, m -> PipIcon(on, m) })
-                        else -> AllIcons(s)
+                        0 -> Hook(s)
+                        1 -> Messaging(s)
+                        2 -> Shopping(s)
+                        3 -> Status(s)
+                        4 -> ChatScreen(s)
+                        else -> AllForty(s)
                     }
                 }
             }
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.weight(1f))
+            Footer(index)
+        }
+    }
+}
+
+/** One bar per scene, like stories: done, filling, waiting. */
+@Composable
+private fun StoryBars(index: Int, k: Float) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        for (i in Scenes.indices) {
+            Box(Modifier.weight(1f).height(3.dp).background(Color.White.copy(alpha = 0.18f), RoundedCornerShape(2.dp))) {
+                val fill = when {
+                    i < index -> 1f
+                    i == index -> k.coerceIn(0f, 1f)
+                    else -> 0f
+                }
+                if (fill > 0f) Box(Modifier.fillMaxWidth(fill).height(3.dp).background(Color.White, RoundedCornerShape(2.dp)))
+            }
+        }
+    }
+}
+
+@Composable
+private fun Footer(index: Int) {
+    if (index == Scenes.lastIndex) {
+        Column {
             BasicText(
-                code,
+                "implementation(\"com.github.zainkhalid91.\n    compose-motion-icons:icons:$Version\")",
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color(0xFF12151B), RoundedCornerShape(12.dp))
                     .border(1.dp, CardBorder, RoundedCornerShape(12.dp))
-                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
                 style = TextStyle(color = Color(0xFFB4C6FF), fontSize = 10.5.sp, fontFamily = FontFamily.Monospace),
             )
-            Spacer(Modifier.weight(1f))
-            BasicText("Pure Compose  ·  No Lottie  ·  Android, desktop, web", style = TextStyle(color = Muted, fontSize = 12.sp))
-        }
-    }
-}
-
-/** A video player whose every control animates as it's tapped, one after another. */
-@Composable
-private fun PlayerHook(s: Float) {
-    val playing = s >= 0.3f
-    Column(
-        Modifier
-            .width(290.dp)
-            .height(214.dp)
-            .background(
-                Brush.verticalGradient(listOf(Color(0xFF2B3A67), Color(0xFF0B0D12))),
-                RoundedCornerShape(16.dp),
+            Spacer(Modifier.height(12.dp))
+            BasicText(
+                "Tap them live in your browser: link in the comments",
+                modifier = Modifier.fillMaxWidth(),
+                style = TextStyle(color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center),
             )
-            .padding(14.dp),
-    ) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            RecordIcon(s >= 3.2f, Modifier.size(24.dp).tap(s, 3.2f))
-            CastIcon(s >= 2.4f, Modifier.size(24.dp).tap(s, 2.4f))
         }
-        Spacer(Modifier.weight(1f))
-        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Box(Modifier.size(54.dp).background(Color.White.copy(alpha = 0.16f), RoundedCornerShape(50)), contentAlignment = Alignment.Center) {
-                PlayPauseIcon(playing, Modifier.size(28.dp).tap(s, 0.3f))
-            }
-        }
-        Spacer(Modifier.weight(1f))
-        // A progress line that runs while playing.
-        Box(Modifier.fillMaxWidth().height(3.dp).background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(2.dp))) {
-            val k = if (playing) ((s - 0.3f) / 6f).coerceIn(0f, 1f) * 0.6f + 0.15f else 0.15f
-            Box(Modifier.fillMaxWidth(k).height(3.dp).background(Color(0xFFF472B6), RoundedCornerShape(2.dp)))
-        }
-        Spacer(Modifier.height(12.dp))
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            ShuffleIcon(s >= 0.9f, Modifier.size(24.dp).tap(s, 0.9f))
-            RepeatIcon(s >= 1.3f, Modifier.size(24.dp).tap(s, 1.3f, 1.9f), one = s >= 1.9f)
-            EqualizerIcon(playing, Modifier.size(24.dp))
-            SpeedIcon(if (s >= 2.8f) 0.85f else 0.4f, Modifier.size(24.dp).tap(s, 2.8f))
-            PipIcon(s >= 3.6f, Modifier.size(24.dp).tap(s, 3.6f))
-            FullscreenIcon(s >= 1.6f, Modifier.size(24.dp).tap(s, 1.6f))
-        }
+    } else {
+        BasicText(
+            "Pure Compose  ·  No Lottie  ·  Android, desktop, web",
+            modifier = Modifier.fillMaxWidth(),
+            style = TextStyle(color = Muted, fontSize = 11.sp, textAlign = TextAlign.Center),
+        )
     }
 }
 
+/** The ten new icons, all switching at once in a quick ripple: motion on the very first frame. */
 @Composable
-private fun NewTen(s: Float, batch: List<IconEntry>) {
-    Column(verticalArrangement = Arrangement.spacedBy(30.dp)) {
+private fun Hook(s: Float) {
+    val batch = IconCatalog.entries.filter { it.batch == BatchId }
+    Column(verticalArrangement = Arrangement.spacedBy(26.dp)) {
         for (row in batch.chunked(5)) {
             Row(horizontalArrangement = Arrangement.spacedBy(22.dp)) {
                 for (entry in row) {
                     val n = batch.indexOf(entry)
-                    val on = s >= 0.3f + n * 0.12f && s < 2.9f + n * 0.08f
-                    entry.content(if (on) entry.steps - 1 else 0, Modifier.size(42.dp))
+                    // Already mid-change at t = 0, so the thumbnail isn't a still grid.
+                    val on = s >= n * 0.06f - 0.2f && s < 1.7f + n * 0.06f
+                    entry.content(if (on) entry.steps - 1 else 0, Modifier.size(40.dp))
                 }
             }
         }
@@ -186,11 +210,121 @@ private fun NewTen(s: Float, batch: List<IconEntry>) {
 }
 
 @Composable
-private fun AllIcons(s: Float) {
-    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        for (row in IconCatalog.entries.chunked(6)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
-                for (entry in row) entry.content(rippleStep(entry, s, 0.2f, 2.3f), Modifier.size(26.dp))
+private fun Labeled(label: String, size: Dp = 58.dp, content: @Composable (Modifier) -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        content(Modifier.size(size))
+        Spacer(Modifier.height(12.dp))
+        BasicText(label, style = TextStyle(color = Muted, fontSize = 11.sp))
+    }
+}
+
+@Composable
+private fun Messaging(s: Float) {
+    Row(horizontalArrangement = Arrangement.spacedBy(20.dp), verticalAlignment = Alignment.CenterVertically) {
+        Labeled("Mail") { m -> MailIcon(s >= 0.3f, m.tap(s, 0.3f)) }
+        Labeled("Phone") { m -> PhoneIcon(s >= 0.8f && s < 2.4f, m.tap(s, 0.8f, 2.4f)) }
+        Labeled("Typing") { m -> TypingIcon(s >= 1.2f, m) }
+        Labeled("Reply") { m -> ReplyIcon(s >= 1.7f, m.tap(s, 1.7f)) }
+    }
+}
+
+@Composable
+private fun Shopping(s: Float) {
+    val count = when {
+        s >= 1.5f -> 3
+        s >= 0.9f -> 2
+        s >= 0.3f -> 1
+        else -> 0
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(34.dp), verticalAlignment = Alignment.CenterVertically) {
+        Labeled("Cart", 66.dp) { m -> CartIcon(count, m.tap(s, 0.3f, 0.9f, 1.5f)) }
+        Labeled("FilterSort", 66.dp) { m -> FilterSortIcon(s >= 2.0f, m.tap(s, 2.0f)) }
+        Labeled("Gift", 66.dp) { m -> GiftIcon(s >= 2.4f, m.tap(s, 2.4f)) }
+    }
+}
+
+@Composable
+private fun Status(s: Float) {
+    val progress = when {
+        s >= 2.0f -> 1f
+        s >= 1.3f -> 0.75f
+        s >= 0.6f -> 0.4f
+        else -> 0f
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(34.dp), verticalAlignment = Alignment.CenterVertically) {
+        Labeled("Sync", 66.dp) { m -> SyncIcon(s >= 0.2f && s < 1.9f, m.tap(s, 0.2f, 1.9f)) }
+        Labeled("Upload", 66.dp) { m -> UploadIcon(progress, m) }
+        Labeled("ThumbUp", 66.dp) { m -> ThumbUpIcon(s >= 2.3f, m.tap(s, 2.3f)) }
+    }
+}
+
+/** A small chat screen where the icons do their jobs: typing, a reply, a like, a call. */
+@Composable
+private fun ChatScreen(s: Float) {
+    val bubble = Color(0xFF232733)
+    val mine = Color(0xFF3B4C86)
+    Column(
+        Modifier
+            .width(286.dp)
+            .height(180.dp)
+            .background(Background, RoundedCornerShape(16.dp))
+            .border(1.dp, CardBorder, RoundedCornerShape(16.dp))
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+    ) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(22.dp).background(Accent, RoundedCornerShape(50)))
+            Spacer(Modifier.width(8.dp))
+            BasicText("Sam", style = TextStyle(color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold))
+            Spacer(Modifier.weight(1f))
+            PhoneIcon(s >= 3.3f, Modifier.size(20.dp).tap(s, 3.3f))
+        }
+        Spacer(Modifier.height(10.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            BasicText(
+                "Lunch tomorrow?",
+                modifier = Modifier.background(bubble, RoundedCornerShape(12.dp)).padding(horizontal = 10.dp, vertical = 6.dp),
+                style = TextStyle(color = Color.White, fontSize = 11.sp),
+            )
+            Spacer(Modifier.width(6.dp))
+            ThumbUpIcon(s >= 1.0f, Modifier.size(18.dp).tap(s, 1.0f))
+        }
+        Spacer(Modifier.height(8.dp))
+        Box(Modifier.fillMaxWidth().height(30.dp), contentAlignment = Alignment.CenterEnd) {
+            if (s >= 2.3f) {
+                BasicText(
+                    "Yes! 1pm works",
+                    modifier = Modifier.background(mine, RoundedCornerShape(12.dp)).padding(horizontal = 10.dp, vertical = 6.dp),
+                    style = TextStyle(color = Color.White, fontSize = 11.sp),
+                )
+            } else {
+                Box(Modifier.background(bubble, RoundedCornerShape(12.dp)).padding(horizontal = 8.dp, vertical = 3.dp)) {
+                    TypingIcon(s >= 0.2f && s < 2.3f, Modifier.size(22.dp))
+                }
+            }
+        }
+        Spacer(Modifier.weight(1f))
+        Row(
+            Modifier.fillMaxWidth().background(bubble, RoundedCornerShape(12.dp)).padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ReplyIcon(s >= 1.6f, Modifier.size(18.dp).tap(s, 1.6f))
+            Spacer(Modifier.width(8.dp))
+            BasicText("Message", style = TextStyle(color = Muted, fontSize = 11.sp))
+            Spacer(Modifier.weight(1f))
+            MailIcon(s >= 2.8f, Modifier.size(18.dp).tap(s, 2.8f))
+        }
+    }
+}
+
+/** Every icon, grouped as in the gallery, rippling on and off in reading order. */
+@Composable
+private fun AllForty(s: Float) {
+    var order = 0
+    val all = IconCatalog.grouped.flatMap { it.second }
+    Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
+        for (row in all.chunked(8)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(13.dp)) {
+                for (entry in row) entry.content(rippleStep(entry, s, 0.2f, 2.2f, order++), Modifier.size(22.dp))
             }
         }
     }

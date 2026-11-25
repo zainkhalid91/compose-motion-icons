@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.0 (2026-11-25)
+
+10 more icons, 40 in all. Batch 3: messaging and shopping.
+
+- Messaging: `MailIcon`, `PhoneIcon`, `TypingIcon` (loops while typing), `ReplyIcon` (reply-all)
+- Shopping: `CartIcon` (takes a count; each new item drops in), `FilterSortIcon`, `GiftIcon`
+- Status: `SyncIcon` (spins while syncing, settles when it stops), `UploadIcon` (progress ring)
+- Social: `ThumbUpIcon`
+- Icons are grouped by category in the gallery and the README.
+- The web gallery shows every icon straight away as an animated preview, grouped by category,
+  while the live version loads.
+
 ## 0.2.0 (2026-11-25)
 
 10 more icons, 30 in all. Batch 2: media and camera.

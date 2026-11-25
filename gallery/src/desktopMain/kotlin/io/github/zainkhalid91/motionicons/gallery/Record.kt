@@ -44,8 +44,9 @@ fun main(args: Array<String>) {
             }
         }
     }
-    record(File(out, "all"), 1600, 1940, 5.0f) { t -> GridDemo(t) }
+    record(File(out, "all"), 1600, gridHeightPx(), 5.0f) { t -> GridDemo(t) }
     record(File(out, "before-after"), 1240, 400, 3.6f) { t -> BeforeAfter(t) }
+    File(out, "icons.json").writeText(IconCatalog.previewManifest())
     println("Wrote frames to ${out.absolutePath}")
 }
 
@@ -77,30 +78,56 @@ internal fun singleStep(entry: IconEntry, t: Float): Int = if (entry.steps == 2)
 }
 
 /** The state for the grid recording: a ripple on in reading order, then a ripple back off. */
-internal fun rippleStep(entry: IconEntry, t: Float, on: Float, off: Float): Int {
-    val delay = (entry.id - 1) * 0.05f
+internal fun rippleStep(entry: IconEntry, t: Float, on: Float, off: Float, order: Int = entry.id - 1): Int {
+    val delay = order * 0.05f
     val active = t >= on + delay && t < off + delay
     // Level icons show their most different state: muted, Wi-Fi off.
     return if (active) entry.steps - 1 else 0
 }
 
+// The grid recording: every icon, grouped by category, eight to a row.
+private const val GridColumns = 8
+private const val GridCell = 86
+private const val GridGap = 8
+private const val GridPad = 24
+private const val GridHeader = 34
+
+private fun gridHeightPx(): Int {
+    val groups = IconCatalog.grouped.filter { it.second.isNotEmpty() }
+    val rows = groups.sumOf { (it.second.size + GridColumns - 1) / GridColumns }
+    val dp = 2 * GridPad + groups.size * GridHeader + rows * (GridCell + GridGap)
+    return dp * 2
+}
+
 @Composable
 private fun GridDemo(t: Float) {
-    Column(Modifier.fillMaxSize().padding(28.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        for (row in IconCatalog.entries.chunked(5)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                for (entry in row) {
-                    Column(
-                        Modifier
-                            .size(width = 136.dp, height = 140.dp)
-                            .background(Card, RoundedCornerShape(18.dp))
-                            .border(1.dp, CardBorder, RoundedCornerShape(18.dp)),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-                        entry.content(rippleStep(entry, t, 0.4f, 2.5f), Modifier.size(48.dp))
-                        Spacer(Modifier.height(14.dp))
-                        BasicText(entry.name.removeSuffix("Icon"), style = TextStyle(color = Muted, fontSize = 12.sp))
+    var order = 0
+    Column(Modifier.fillMaxSize().padding(GridPad.dp)) {
+        for ((category, group) in IconCatalog.grouped) {
+            if (group.isEmpty()) continue
+            Box(Modifier.height(GridHeader.dp), contentAlignment = Alignment.BottomStart) {
+                BasicText(
+                    category,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                    style = TextStyle(color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.SemiBold),
+                )
+            }
+            for (row in group.chunked(GridColumns)) {
+                Row(Modifier.padding(bottom = GridGap.dp), horizontalArrangement = Arrangement.spacedBy(GridGap.dp)) {
+                    for (entry in row) {
+                        val index = order++
+                        Column(
+                            Modifier
+                                .size(GridCell.dp)
+                                .background(Card, RoundedCornerShape(16.dp))
+                                .border(1.dp, CardBorder, RoundedCornerShape(16.dp)),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            entry.content(rippleStep(entry, t, 0.4f, 2.5f, index), Modifier.size(34.dp))
+                            Spacer(Modifier.height(9.dp))
+                            BasicText(entry.name.removeSuffix("Icon"), style = TextStyle(color = Muted, fontSize = 10.sp))
+                        }
                     }
                 }
             }

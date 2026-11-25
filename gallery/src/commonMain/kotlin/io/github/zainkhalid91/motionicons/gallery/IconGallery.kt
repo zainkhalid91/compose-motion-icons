@@ -61,6 +61,9 @@ public val GalleryPalette: List<Color> = listOf(
 
 private val Speeds = listOf(0.5f to "0.5x", 1f to "1x", 2f to "2x")
 
+// The order icons appear on screen: grouped by category.
+private val ReadingOrder: List<IconEntry> = IconCatalog.grouped.flatMap { it.second }
+
 /** The whole gallery: tap an icon to change its state, or let them all play. */
 @Composable
 public fun IconGallery(modifier: Modifier = Modifier) {
@@ -74,8 +77,9 @@ public fun IconGallery(modifier: Modifier = Modifier) {
             while (true) {
                 delay(220)
                 // One icon at a time, in reading order, so the grid ripples rather than flashing.
-                val i = tick % IconCatalog.entries.size
-                steps[i] = (steps[i] + 1) % IconCatalog.entries[i].steps
+                val entry = ReadingOrder[tick % ReadingOrder.size]
+                val i = entry.id - 1
+                steps[i] = (steps[i] + 1) % entry.steps
                 tick++
             }
         }
@@ -98,16 +102,22 @@ public fun IconGallery(modifier: Modifier = Modifier) {
                     onAutoplay = { autoplay = it },
                 )
             }
-            items(IconCatalog.entries, key = { it.id }) { entry ->
-                val index = entry.id - 1
-                IconCard(entry, steps[index]) {
-                    autoplay = false
-                    steps[index] = (steps[index] + 1) % entry.steps
+            for ((category, group) in IconCatalog.grouped) {
+                if (group.isEmpty()) continue
+                item(key = "header-$category", span = { GridItemSpan(maxLineSpan) }) {
+                    CategoryHeader(category, group.size)
+                }
+                items(group, key = { it.id }) { entry ->
+                    val index = entry.id - 1
+                    IconCard(entry, steps[index]) {
+                        autoplay = false
+                        steps[index] = (steps[index] + 1) % entry.steps
+                    }
                 }
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
                 BasicText(
-                    "implementation(\"com.github.zainkhalid91.compose-motion-icons:icons:0.2.0\")",
+                    "implementation(\"com.github.zainkhalid91.compose-motion-icons:icons:0.3.0\")",
                     modifier = Modifier.padding(top = 12.dp),
                     style = TextStyle(color = Muted, fontSize = 12.sp, fontFamily = FontFamily.Monospace),
                 )
@@ -154,6 +164,15 @@ private fun Header(
             Spacer(Modifier.size(4.dp))
             Chip(if (autoplay) "Pause demo" else "Play demo", autoplay) { onAutoplay(!autoplay) }
         }
+    }
+}
+
+@Composable
+private fun CategoryHeader(name: String, count: Int) {
+    Row(Modifier.padding(top = 14.dp, bottom = 2.dp), verticalAlignment = Alignment.Bottom) {
+        BasicText(name, style = TextStyle(color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.SemiBold))
+        Spacer(Modifier.size(8.dp))
+        BasicText("$count", style = TextStyle(color = Muted, fontSize = 13.sp))
     }
 }
 
