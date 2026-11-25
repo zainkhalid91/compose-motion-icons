@@ -167,7 +167,7 @@ private fun Reel(t: Float) {
 }
 
 /** A soft ring where a finger tapped, fading out over 0.4 s. */
-private fun Modifier.tap(t: Float, vararg at: Float): Modifier = drawWithContent {
+internal fun Modifier.tap(t: Float, vararg at: Float): Modifier = drawWithContent {
     drawContent()
     for (a in at) {
         val k = (t - a) / 0.4f
@@ -222,7 +222,7 @@ private fun GridScene(s: Float) {
 }
 
 @Composable
-private fun PairScene(
+internal fun PairScene(
     s: Float,
     first: @Composable (Boolean, Modifier) -> Unit,
     second: @Composable (Boolean, Modifier) -> Unit,

@@ -44,7 +44,7 @@ fun main(args: Array<String>) {
             }
         }
     }
-    record(File(out, "all"), 1600, 1320, 4.6f) { t -> GridDemo(t) }
+    record(File(out, "all"), 1600, 1940, 5.0f) { t -> GridDemo(t) }
     record(File(out, "before-after"), 1240, 400, 3.6f) { t -> BeforeAfter(t) }
     println("Wrote frames to ${out.absolutePath}")
 }
@@ -78,7 +78,7 @@ internal fun singleStep(entry: IconEntry, t: Float): Int = if (entry.steps == 2)
 
 /** The state for the grid recording: a ripple on in reading order, then a ripple back off. */
 internal fun rippleStep(entry: IconEntry, t: Float, on: Float, off: Float): Int {
-    val delay = (entry.id - 1) * 0.07f
+    val delay = (entry.id - 1) * 0.05f
     val active = t >= on + delay && t < off + delay
     // Level icons show their most different state: muted, Wi-Fi off.
     return if (active) entry.steps - 1 else 0

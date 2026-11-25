@@ -59,6 +59,24 @@ tasks.register<JavaExec>("recordDemoReel") {
     args(layout.buildDirectory.dir("demoreel").get().asFile.absolutePath)
 }
 
+// ./gradlew :gallery:recordBatchReel renders the latest batch's video to build/batchreel.
+tasks.register<JavaExec>("recordBatchReel") {
+    description = "Renders the latest batch video frame by frame to build/batchreel"
+    classpath(desktopMain.output.allOutputs, desktopMain.runtimeDependencyFiles)
+    mainClass.set("io.github.zainkhalid91.motionicons.gallery.BatchReelKt")
+    args(layout.buildDirectory.dir("batchreel").get().asFile.absolutePath)
+}
+
+// The web page shows real download progress. It needs each .wasm file's size up front, because
+// a compressed response doesn't say how many bytes it will unpack to.
+tasks.named("wasmJsBrowserDistribution") {
+    val dist = layout.buildDirectory.dir("dist/wasmJs/productionExecutable").get().asFile
+    doLast {
+        val wasm = dist.listFiles { f -> f.extension == "wasm" }.orEmpty().sortedBy { it.name }
+        File(dist, "sizes.json").writeText(wasm.joinToString(",", "{", "}") { "\"${it.name}\":${it.length()}" })
+    }
+}
+
 compose.desktop {
     application {
         mainClass = "io.github.zainkhalid91.motionicons.gallery.MainKt"

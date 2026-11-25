@@ -107,7 +107,7 @@ public fun IconGallery(modifier: Modifier = Modifier) {
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
                 BasicText(
-                    "implementation(\"com.github.zainkhalid91.compose-motion-icons:icons:0.1.0\")",
+                    "implementation(\"com.github.zainkhalid91.compose-motion-icons:icons:0.2.0\")",
                     modifier = Modifier.padding(top = 12.dp),
                     style = TextStyle(color = Muted, fontSize = 12.sp, fontFamily = FontFamily.Monospace),
                 )

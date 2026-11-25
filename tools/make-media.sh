@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Turns gallery/build/frames (./gradlew :gallery:recordFrames) into the README GIFs in docs/media,
-# and gallery/build/demoreel (./gradlew :gallery:recordDemoReel) into docs/media/demo-reel.mp4.
+# gallery/build/demoreel (./gradlew :gallery:recordDemoReel) into docs/media/demo-reel.mp4, and
+# gallery/build/batchreel (./gradlew :gallery:recordBatchReel) into docs/media/batch-reel.mp4.
 # Needs ffmpeg on the PATH.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -19,5 +20,9 @@ done
 if [ -d gallery/build/demoreel ]; then
   ffmpeg -loglevel error -y -framerate 30 -i gallery/build/demoreel/%04d.png \
     -c:v libx264 -pix_fmt yuv420p -crf 18 -movflags +faststart "$out/demo-reel.mp4"
+fi
+if [ -d gallery/build/batchreel ]; then
+  ffmpeg -loglevel error -y -framerate 30 -i gallery/build/batchreel/%04d.png \
+    -c:v libx264 -pix_fmt yuv420p -crf 18 -movflags +faststart "$out/batch-reel.mp4"
 fi
 echo "Media written to $out"

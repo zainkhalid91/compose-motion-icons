@@ -28,7 +28,7 @@ dependencyResolutionManagement {
 
 // build.gradle.kts
 dependencies {
-    implementation("com.github.zainkhalid91.compose-motion-icons:icons:0.1.0")
+    implementation("com.github.zainkhalid91.compose-motion-icons:icons:0.2.0")
 }
 ```
 
@@ -50,6 +50,7 @@ PlayPauseIcon(playing = player.isPlaying)
 EyeIcon(visible = showPassword)
 VolumeIcon(level = volume)            // 0f..1f, waves follow the level
 WifiIcon(strength = signal)           // 0f..1f, arcs light up one by one
+EqualizerIcon(playing = isPlaying)    // bars dance while playing, settle when paused
 ```
 
 Every icon takes `modifier`, `color`, `size`, `strokeWidth` and `contentDescription`, and icons
@@ -64,8 +65,11 @@ that light up take an accent (`activeColor`, `badgeColor`, `doneColor`).
 | ![](docs/media/CheckboxIcon.gif)<br>`CheckboxIcon(checked)` | ![](docs/media/BookmarkIcon.gif)<br>`BookmarkIcon(saved)` | ![](docs/media/VolumeIcon.gif)<br>`VolumeIcon(level)` | ![](docs/media/WifiIcon.gif)<br>`WifiIcon(strength)` |
 | ![](docs/media/MicIcon.gif)<br>`MicIcon(muted)` | ![](docs/media/AddCloseIcon.gif)<br>`AddCloseIcon(open)` | ![](docs/media/CopyIcon.gif)<br>`CopyIcon(copied)` | ![](docs/media/DownloadIcon.gif)<br>`DownloadIcon(done)` |
 | ![](docs/media/SendIcon.gif)<br>`SendIcon(sent)` | ![](docs/media/StarIcon.gif)<br>`StarIcon(starred)` | ![](docs/media/TrashIcon.gif)<br>`TrashIcon(open)` | ![](docs/media/GridListIcon.gif)<br>`GridListIcon(grid)` |
+| ![](docs/media/RecordIcon.gif)<br>`RecordIcon(recording)` | ![](docs/media/RepeatIcon.gif)<br>`RepeatIcon(enabled, one)` | ![](docs/media/ShuffleIcon.gif)<br>`ShuffleIcon(on)` | ![](docs/media/FullscreenIcon.gif)<br>`FullscreenIcon(fullscreen)` |
+| ![](docs/media/CameraFlipIcon.gif)<br>`CameraFlipIcon(front)` | ![](docs/media/SpeedIcon.gif)<br>`SpeedIcon(level)` | ![](docs/media/PipIcon.gif)<br>`PipIcon(pip)` | ![](docs/media/CastIcon.gif)<br>`CastIcon(connected)` |
+| ![](docs/media/EqualizerIcon.gif)<br>`EqualizerIcon(playing)` | ![](docs/media/ApertureIcon.gif)<br>`ApertureIcon(open)` | | |
 
-What each one does is in [ICONS.md](ICONS.md). 20 today, 50 on the way.
+What each one does is in [ICONS.md](ICONS.md). 30 today, 50 on the way.
 
 ## Built for real screens
 
@@ -118,7 +122,8 @@ paparazzi.snapshot { FreezeMotionIcons { PlayerScreen(playing = true) } }
 ```
 
 The GIFs and the demo video are rendered from the real library, frame by frame:
-`./gradlew :gallery:recordFrames :gallery:recordDemoReel`, then `tools/make-media.sh`.
+`./gradlew :gallery:recordFrames :gallery:recordDemoReel :gallery:recordBatchReel`, then
+`tools/make-media.sh`.
 
 ## Roadmap
 

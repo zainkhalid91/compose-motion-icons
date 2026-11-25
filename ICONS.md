@@ -42,14 +42,24 @@ build if it drifts from `IconCatalog` or from the public functions in `:icons`.
 | 18 | `StarIcon` | Social | spins one point round with overshoot, fills, sparkles shed from its tips | 2026-W48 |
 | 19 | `TrashIcon` | System | lid flips up on its left hinge with a bounce | 2026-W48 |
 | 20 | `GridListIcon` | Navigation | four tiles stretch into four list rows one after another | 2026-W48 |
+| 21 | `RecordIcon` | Media | red dot squares off into a stop button with a quarter turn; a ripple leaves the ring | 2026-W49 |
+| 22 | `RepeatIcon` | Media | arrows chase each other half way round the loop and light up; repeat-one pops a 1 in | 2026-W49 |
+| 23 | `ShuffleIcon` | Media | two parallel arrows swap their ends and bend into a crossing, with overshoot | 2026-W49 |
+| 24 | `FullscreenIcon` | Media | corner vertices slide in along the diagonals while the arms stay put; the icon breathes | 2026-W49 |
+| 25 | `CameraFlipIcon` | Camera | camera squeezes flat as if turning round while its inner arrows spin half a turn | 2026-W49 |
+| 26 | `SpeedIcon` | Media | gauge needle swings to the level with overshoot, filling the dial behind it | 2026-W49 |
+| 27 | `PipIcon` | Media | inner window shrinks into the bottom-right corner and solidifies | 2026-W49 |
+| 28 | `CastIcon` | Media | screen floods with colour from the corner while the waves ripple out in turn | 2026-W49 |
+| 29 | `EqualizerIcon` | Media | four bars dance on their own rhythms while playing, sink to rest when paused (loops) | 2026-W49 |
+| 30 | `ApertureIcon` | Camera | six blades twist and close towards the centre, and open again | 2026-W49 |
 
 ## Backlog (to reach 50)
 
 Ideas not built yet, grouped so each weekly batch has a theme. Check the table above before
 picking one.
 
-- **Media controls:** record (dot to stop square), skip next (triangles slide), repeat/shuffle
-  (arrows reroute), fullscreen enter/exit (corners fly in/out), camera flip (front/back turn).
+- **Media controls (more):** skip next/previous (triangles slide through), rewind/forward 10 s
+  (arrow circles with the number), subtitles (lines type into the box).
 - **Messaging:** mail (envelope flap opens, letter rises), attach (paperclip bends), thumbs-up
   (thumb lifts with a wobble), reply (arrow curls back), typing (bubble with a tick).
 - **Commerce:** cart (item drops in, count badge bumps), refresh to done (arrows spin, then a

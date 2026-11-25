@@ -10,7 +10,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.MotionDurationScale
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
@@ -35,6 +41,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
+import kotlin.coroutines.coroutineContext
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -93,6 +100,36 @@ internal fun animateFlourish(trigger: Boolean, durationMillis: Int): Animatable<
         }
     }
     return anim
+}
+
+/** Seconds of running time for icons that keep moving while on, read in the draw phase. */
+@Stable
+internal class IconClock {
+    var seconds: Float by mutableFloatStateOf(0f)
+}
+
+/**
+ * A clock that ticks every frame while [running], for icons that keep moving (an equalizer while
+ * music plays). It pauses where it is when stopped, stays at 0 inside [FreezeMotionIcons], and
+ * never starts when the system has animations turned off, so reduced motion gets a still icon.
+ */
+@Composable
+internal fun rememberIconClock(running: Boolean): IconClock {
+    val speed = LocalMotionIconStyle.current.speed
+    val frozen = LocalFrozenIcons.current
+    val clock = remember { IconClock() }
+    if (running && !frozen) {
+        LaunchedEffect(speed) {
+            if (coroutineContext[MotionDurationScale]?.scaleFactor == 0f) return@LaunchedEffect
+            var last = -1L
+            val onFrame: (Long) -> Unit = { now ->
+                if (last >= 0L) clock.seconds += (now - last) / 1_000_000_000f * speed
+                last = now
+            }
+            while (true) withFrameNanos(onFrame)
+        }
+    }
+    return clock
 }
 
 /**

@@ -71,6 +71,7 @@ class IconRenderTest {
         // An already-liked heart in a list must not burst or fill as it scrolls into view.
         for (entry in IconCatalog.entries) {
             for (step in 0 until entry.steps) {
+                if (step in entry.loops) continue
                 val settled = still { entry.content(step, Modifier.size(40.dp)) }
                 val first = VirtualScene(96, 96, 2f) { Frame { entry.content(step, Modifier.size(40.dp)) } }.use {
                     it.render(0)
@@ -85,6 +86,7 @@ class IconRenderTest {
     fun transitionsSettleOnTheTargetState() {
         for (entry in IconCatalog.entries) {
             for (target in 1 until entry.steps) {
+                if (target in entry.loops) continue
                 val step = mutableIntStateOf(0)
                 val settled = still { entry.content(target, Modifier.size(40.dp)) }
                 val end = VirtualScene(96, 96, 2f) { Frame { entry.content(step.intValue, Modifier.size(40.dp)) } }.use { scene ->
@@ -111,6 +113,22 @@ class IconRenderTest {
                 pixels(scene.play(1, 8))
             }
             assertTrue(!same(middle, start) && !same(middle, end), "${entry.name} has no in-between frames")
+        }
+    }
+
+    @Test
+    fun loopingStatesKeepMovingAndStopWhenFrozen() {
+        for (entry in IconCatalog.entries) {
+            for (step in entry.loops) {
+                val (a, b) = VirtualScene(96, 96, 2f) { Frame { entry.content(step, Modifier.size(40.dp)) } }.use { scene ->
+                    pixels(scene.play(0, 20)) to pixels(scene.play(20, 7))
+                }
+                assertTrue(!same(a, b), "${entry.name} stands still at looping step $step")
+                val (c, d) = VirtualScene(96, 96, 2f) {
+                    Frame { FreezeMotionIcons { entry.content(step, Modifier.size(40.dp)) } }
+                }.use { scene -> pixels(scene.play(0, 20)) to pixels(scene.play(20, 7)) }
+                assertTrue(same(c, d), "${entry.name} keeps moving inside FreezeMotionIcons")
+            }
         }
     }
 

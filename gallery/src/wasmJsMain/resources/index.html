@@ -7,18 +7,116 @@
     <meta name="description" content="Icons that animate between states, written in pure Jetpack Compose and Compose Multiplatform. Tap any icon.">
     <style>
         html, body { margin: 0; height: 100%; background: #0F1115; overflow: hidden; }
-        #loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
-                   color: #8A90A0; font: 14px system-ui, sans-serif; }
+        #loading { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center;
+                   justify-content: center; gap: 18px; padding: 0 16px; text-align: center;
+                   color: #8A90A0; font: 14px system-ui, -apple-system, sans-serif; transition: opacity .25s; }
+        #loading h1 { margin: 0; color: #fff; font-size: 18px; font-weight: 600; }
+        .ring { position: relative; width: 96px; height: 96px; }
+        .ring svg { width: 96px; height: 96px; transform: rotate(-90deg); }
+        .ring circle { fill: none; stroke-width: 6; stroke-linecap: round; }
+        .ring .track { stroke: #22262F; }
+        .ring .bar { stroke: #7C9CFF; stroke-dasharray: 264; stroke-dashoffset: 264; transition: stroke-dashoffset .15s linear; }
+        .ring .pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+                     color: #fff; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+        .ring.busy svg { animation: spin 1s linear infinite; }
+        .ring.busy .bar { stroke-dashoffset: 190; }
+        @keyframes spin { to { transform: rotate(270deg); } }
+        #status { font-variant-numeric: tabular-nums; min-height: 1.4em; }
+        #loading.error .ring { display: none; }
+        #loading.error #status { color: #F87171; max-width: 360px; line-height: 1.5; }
     </style>
+    <script>
+        // Real download progress: every .wasm response is counted byte by byte as it arrives.
+        // sizes.json (written at build time) gives the exact totals, because a compressed response's
+        // Content-Length is the compressed size, not the bytes the stream hands back.
+        (function () {
+            var totals = {}, loaded = {}, expected = 0, done = false;
+            var sizes = fetch('sizes.json', { cache: 'no-cache' })
+                .then(function (r) { return r.ok ? r.json() : {}; })
+                .catch(function () { return {}; })
+                .then(function (s) { expected = Object.keys(s).reduce(function (a, k) { return a + s[k]; }, 0); return s; });
+
+            function sum(o) { var n = 0; for (var k in o) n += o[k]; return n; }
+            function mb(n) { return (n / 1048576).toFixed(1); }
+
+            window.__galleryProgress = function () {
+                if (done) return;
+                var got = sum(loaded);
+                var total = Math.max(expected, sum(totals), got);
+                var bar = document.querySelector('#loading .bar');
+                var pct = document.querySelector('#loading .pct');
+                var status = document.getElementById('status');
+                if (!bar || !total) return;
+                var f = Math.min(1, got / total);
+                if (f >= 1) {
+                    document.querySelector('#loading .ring').classList.add('busy');
+                    pct.textContent = '';
+                    status.textContent = 'Starting the icons…';
+                    return;
+                }
+                bar.style.strokeDashoffset = String(264 * (1 - f));
+                pct.textContent = Math.floor(f * 100) + '%';
+                status.textContent = 'Downloading ' + mb(got) + ' / ' + mb(total) + ' MB';
+            };
+            window.__galleryDone = function () { done = true; };
+
+            var origFetch = window.fetch.bind(window);
+            window.fetch = function (input, init) {
+                var url = typeof input === 'string' ? input : (input && input.url) || String(input);
+                if (!/\.wasm(\?|#|$)/.test(url)) return origFetch(input, init);
+                var name = url.split(/[?#]/)[0].split('/').pop();
+                return Promise.all([origFetch(input, init), sizes]).then(function (r) {
+                    var res = r[0], s = r[1];
+                    if (!res.ok || !res.body) return res;
+                    var header = Number(res.headers.get('content-length')) || 0;
+                    totals[name] = s[name] || (res.headers.get('content-encoding') ? 0 : header);
+                    loaded[name] = 0;
+                    window.__galleryProgress();
+                    var reader = res.body.getReader();
+                    var stream = new ReadableStream({
+                        pull: function (ctrl) {
+                            return reader.read().then(function (c) {
+                                if (c.done) { ctrl.close(); return; }
+                                loaded[name] += c.value.byteLength;
+                                window.__galleryProgress();
+                                ctrl.enqueue(c.value);
+                            });
+                        },
+                        cancel: function (why) { return reader.cancel(why); }
+                    });
+                    // Same headers, so instantiateStreaming still sees application/wasm.
+                    return new Response(stream, { status: res.status, statusText: res.statusText, headers: res.headers });
+                });
+            };
+
+            window.addEventListener('error', function (e) {
+                var l = document.getElementById('loading');
+                if (!l || done) return;
+                if (typeof WebAssembly === 'undefined' || /wasm|WebAssembly/i.test(String(e.message))) {
+                    l.classList.add('error');
+                    document.getElementById('status').textContent =
+                        'This browser can’t run the gallery. It needs WebAssembly GC: Chrome 119+, Firefox 120+ or Safari 18.2+.';
+                }
+            });
+        })();
+    </script>
     <script type="application/javascript" src="gallery.js"></script>
 </head>
 <body>
-<div id="loading">Loading the gallery…</div>
+<div id="loading">
+    <h1>Compose Motion Icons</h1>
+    <div class="ring">
+        <svg viewBox="0 0 96 96"><circle class="track" cx="48" cy="48" r="42"/><circle class="bar" cx="48" cy="48" r="42"/></svg>
+        <div class="pct">0%</div>
+    </div>
+    <div id="status">Connecting…</div>
+</div>
 <script>
     new MutationObserver(function (_, observer) {
         if (document.querySelector('canvas')) {
+            window.__galleryDone && window.__galleryDone();
             var l = document.getElementById('loading');
-            if (l) l.remove();
+            if (l) { l.style.opacity = '0'; setTimeout(function () { l.remove(); }, 260); }
             observer.disconnect();
         }
     }).observe(document.body, { childList: true, subtree: true });
