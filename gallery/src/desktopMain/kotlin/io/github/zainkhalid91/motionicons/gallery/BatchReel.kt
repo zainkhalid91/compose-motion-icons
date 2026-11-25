@@ -54,7 +54,7 @@ import kotlin.math.roundToInt
 private class Scene(val seconds: Float, val chip: String?, val headline: String)
 
 private val Scenes = listOf(
-    Scene(3.0f, null, "Chat and shop icons\nthat actually move"),
+    Scene(3.0f, null, "Your icons swap.\nThese ones move."),
     Scene(3.2f, "Messaging", "Mail opens.\nCalls hang up."),
     Scene(3.2f, "Shopping", "Items drop\ninto the cart"),
     Scene(3.2f, "Status", "Sync spins,\nthen settles"),
@@ -62,7 +62,11 @@ private val Scenes = listOf(
     Scene(4.0f, null, "40 icons.\nFree and open source."),
 )
 
-private const val BatchId = "2026-W50"
+// The opening grid: the most recognisable icon from across the library, for a first look at it.
+private val HookIcons = listOf(
+    "HeartIcon", "MenuCloseIcon", "PlayPauseIcon", "ThemeIcon", "BellIcon",
+    "MailIcon", "CartIcon", "StarIcon", "LockIcon", "GiftIcon",
+)
 private const val Version = "0.3.0"
 private val Accent = Color(0xFF7C9CFF)
 
@@ -191,10 +195,10 @@ private fun Footer(index: Int) {
     }
 }
 
-/** The ten new icons, all switching at once in a quick ripple: motion on the very first frame. */
+/** Ten well-known icons switching in a quick ripple: motion on the very first frame. */
 @Composable
 private fun Hook(s: Float) {
-    val batch = IconCatalog.entries.filter { it.batch == BatchId }
+    val batch = HookIcons.map { name -> IconCatalog.entries.first { it.name == name } }
     Column(verticalArrangement = Arrangement.spacedBy(26.dp)) {
         for (row in batch.chunked(5)) {
             Row(horizontalArrangement = Arrangement.spacedBy(22.dp)) {
