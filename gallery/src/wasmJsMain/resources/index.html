@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Compose Motion Icons</title>
+    <meta name="description" content="Icons that animate between states, written in pure Jetpack Compose and Compose Multiplatform. Tap any icon.">
+    <style>
+        html, body { margin: 0; height: 100%; background: #0F1115; overflow: hidden; }
+        #loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+                   color: #8A90A0; font: 14px system-ui, sans-serif; }
+    </style>
+    <script type="application/javascript" src="gallery.js"></script>
+</head>
+<body>
+<div id="loading">Loading the gallery…</div>
+<script>
+    new MutationObserver(function (_, observer) {
+        if (document.querySelector('canvas')) {
+            var l = document.getElementById('loading');
+            if (l) l.remove();
+            observer.disconnect();
+        }
+    }).observe(document.body, { childList: true, subtree: true });
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+[versions]
+agp = "9.4.1"
+kotlin = "2.4.20"
+compose-multiplatform = "1.12.1"
+# The published library links against an older Compose so apps on compileSdk 36 can use it.
+# Gradle resolves to the app's newer Compose when it has one.
+compose-library = "1.10.3"
+coroutines = "1.10.2"
+
+[libraries]
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
+compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+
+lib-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-library" }
+lib-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-library" }
+lib-compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-library" }
+lib-compose-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "compose-library" }
+lib-compose-animation = { module = "org.jetbrains.compose.animation:animation-core", version.ref = "compose-library" }
+
+[plugins]
+android-kmp-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
