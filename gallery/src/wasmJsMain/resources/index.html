@@ -3,36 +3,235 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Compose Motion Icons</title>
-    <meta name="description" content="Icons that animate between states, written in pure Jetpack Compose and Compose Multiplatform. Tap any icon.">
+    <title>Compose Motion Icons: animated icons for Jetpack Compose</title>
+    <meta name="description" content="40 free icons that animate between states, written in pure Jetpack Compose and Compose Multiplatform. Pass a state and the icon animates. No Lottie files, no assets.">
+    <link rel="canonical" href="https://zainkhalid91.github.io/compose-motion-icons/">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Compose Motion Icons">
+    <meta property="og:description" content="40 free icons that move between states, in pure Jetpack Compose. Try every one in your browser.">
+    <meta property="og:url" content="https://zainkhalid91.github.io/compose-motion-icons/">
+    <meta property="og:image" content="https://zainkhalid91.github.io/compose-motion-icons/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#000000">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
     <style>
-        html, body { margin: 0; height: 100%; background: #0F1115; overflow: hidden; }
-        /* Shown at once: every icon as a small looping GIF, grouped by category. The live gallery
-           (the library itself, compiled to WebAssembly) replaces it as soon as it has loaded. */
-        #preview { position: fixed; inset: 0; overflow-y: auto; z-index: 2; background: #0F1115;
-                   color: #8A90A0; font: 14px system-ui, -apple-system, sans-serif; transition: opacity .3s; }
-        #preview .wrap { max-width: 1180px; margin: 0 auto; padding: 20px 16px 40px; }
-        #preview h1 { margin: 0 0 6px; color: #fff; font-size: 26px; font-weight: 700; }
-        #preview p { margin: 0; line-height: 1.45; }
-        #bar { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: #7C9CFF; z-index: 3;
-               transition: width .15s linear; }
-        #status { margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px;
-                  border: 1px solid #252A34; border-radius: 999px; font-size: 13px; font-variant-numeric: tabular-nums; }
-        #status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #7C9CFF;
-                          animation: blink 1s ease-in-out infinite; }
-        @keyframes blink { 50% { opacity: .25; } }
-        #preview.error #status { color: #F87171; border-color: #5B2A2A; border-radius: 12px; }
-        #preview.error #status::before { display: none; }
-        #preview h2 { margin: 26px 0 10px; color: #fff; font-size: 17px; font-weight: 600; }
-        #preview h2 span { margin-left: 8px; color: #8A90A0; font-size: 13px; font-weight: 400; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 12px; }
-        .card { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 18px 0 16px;
-                background: #171A21; border: 1px solid #252A34; border-radius: 18px; font-size: 12px; }
-        /* The GIFs are rendered on the page background; lighten drops that square onto the card. */
-        .card img { width: 56px; height: 56px; mix-blend-mode: lighten; }
+        :root {
+            --black: #000000; --surface: #181818; --raised: #1F1F1F; --hover: #272727; --line: #272727;
+            --text: #FFFFFF; --muted: #9B9B9B; --accent: #7C9CFF; --code: #B4C6FF;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; background: var(--black); color: var(--text); font-family: Geist, system-ui, sans-serif;
+               -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        a { color: inherit; }
+        img { display: block; }
+        h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
+        p { margin: 0; text-wrap: pretty; }
+        code, pre, .mono { font-family: "Geist Mono", ui-monospace, monospace; }
+
+        /* Text styles (B1). Each maps to a Tailwind step. */
+        .heading-1 { font-size: 60px; line-height: 60px; font-weight: 600; letter-spacing: -0.02em; }
+        .heading-2 { font-size: 48px; line-height: 48px; font-weight: 600; letter-spacing: -0.02em; }
+        .heading-3 { font-size: 36px; line-height: 40px; font-weight: 600; letter-spacing: -0.01em; }
+        .heading-4 { font-size: 30px; line-height: 36px; font-weight: 600; }
+        .title-2 { font-size: 18px; line-height: 28px; font-weight: 500; }
+        .title-3 { font-size: 16px; line-height: 24px; font-weight: 500; }
+        .title-4 { font-size: 14px; line-height: 20px; font-weight: 500; }
+        .body-3 { font-size: 16px; line-height: 24px; font-weight: 400; }
+        .body-6 { font-size: 14px; line-height: 20px; font-weight: 400; }
+        .button-md { font-size: 16px; line-height: 24px; font-weight: 600; }
+        .button-sm { font-size: 14px; line-height: 20px; font-weight: 600; }
+        .caption-2 { font-size: 14px; line-height: 20px; font-weight: 400; }
+        .caption-4 { font-size: 12px; line-height: 16px; font-weight: 500; }
+        .caption-5 { font-size: 12px; line-height: 16px; font-weight: 400; }
+        .muted { color: var(--muted); }
+
+        .skip { position: absolute; left: 16px; top: -64px; z-index: 50; padding: 8px 12px; background: var(--text);
+                color: var(--black); border-radius: 8px; text-decoration: none; transition: transform 300ms var(--ease); }
+        .skip:focus { transform: translateY(80px); }
+        .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+        section { padding: 96px 0; }
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+        /* Buttons (B2 padding, B9 states). */
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 12px; border: 1px solid transparent;
+               cursor: pointer; text-decoration: none; font-family: inherit;
+               transition: transform 300ms var(--ease), background-color 300ms var(--ease), opacity 300ms var(--ease); }
+        .btn:hover { transform: translateY(-2px); }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--text); color: var(--black); }
+        .btn-primary:hover { background: #E8E8E8; }
+        .btn-ghost { background: var(--raised); color: var(--text); border-color: var(--line); }
+        .btn-ghost:hover { background: var(--hover); }
+        .btn i { font-size: 18px; }
+
+        /* Navigation (B7): floats off the top, translucent over a blur. */
+        .nav { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 20; display: flex; align-items: center; gap: 24px;
+               padding: 8px 8px 8px 16px; background: rgba(24, 24, 24, 0.72); border: 1px solid var(--line); border-radius: 999px;
+               backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); white-space: nowrap; }
+        .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        .brand img { width: 24px; height: 24px; mix-blend-mode: lighten; }
+        .nav-links { display: flex; gap: 4px; }
+        .nav-links a { padding: 4px 12px; border-radius: 999px; text-decoration: none; color: var(--muted);
+                       transition: color 300ms var(--ease), background-color 300ms var(--ease); }
+        .nav-links a:hover { color: var(--text); }
+        .nav-links a.current { color: var(--text); background: var(--hover); }
+        .menu-toggle { display: none; width: 40px; height: 40px; border-radius: 999px; border: 1px solid var(--line); background: var(--raised);
+                       cursor: pointer; position: relative; }
+        .menu-toggle span { position: absolute; left: 12px; width: 16px; height: 2px; border-radius: 2px; background: var(--text);
+                            transition: transform 500ms var(--ease); }
+        .menu-toggle span:first-child { top: 15px; }
+        .menu-toggle span:last-child { top: 21px; }
+        .menu-open .menu-toggle span:first-child { transform: translateY(3px) rotate(45deg); }
+        .menu-open .menu-toggle span:last-child { transform: translateY(-3px) rotate(-45deg); }
+        .menu-panel { position: fixed; inset: 0; z-index: 15; background: rgba(0, 0, 0, 0.92); backdrop-filter: blur(24px);
+                      -webkit-backdrop-filter: blur(24px); padding: 112px 24px 24px; display: flex; flex-direction: column; gap: 8px;
+                      opacity: 0; pointer-events: none; transition: opacity 500ms var(--ease); }
+        .menu-panel a { text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--line); opacity: 0; transform: translateY(24px);
+                        transition: opacity 500ms var(--ease), transform 500ms var(--ease); }
+        .menu-open { overflow: hidden; }
+        .menu-open .menu-panel { opacity: 1; pointer-events: auto; }
+        .menu-open .menu-panel a { opacity: 1; transform: none; }
+
+        /* Hero (B5). */
+        .hero { padding: 160px 0 64px; }
+        .hero h1 { max-width: 680px; background: linear-gradient(90deg, #FFFFFF, #9B9B9B); -webkit-background-clip: text;
+                   background-clip: text; color: transparent; }
+        .hero .sub { max-width: 680px; margin-top: 24px; }
+        .hero .actions { margin-top: 32px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+        .install-line { color: var(--muted); }
+        .proof { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px 16px; }
+        .proof span { display: inline-flex; align-items: center; gap: 4px; }
+        .wall { margin-top: 48px; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 24px;
+                display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+        .wall a { position: relative; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: var(--raised);
+                  border-radius: 8px; text-decoration: none; transition: transform 500ms var(--ease), background-color 300ms var(--ease); }
+        .wall a:hover { transform: translateY(-4px); background: var(--hover); }
+        .wall a:active { transform: scale(0.98); }
+        .wall img { width: 56px; height: 56px; mix-blend-mode: lighten; }
+        .wall .tip { position: absolute; bottom: 8px; left: 0; right: 0; text-align: center; color: var(--muted); opacity: 0;
+                     transition: opacity 300ms var(--ease); }
+        .wall a:hover .tip, .wall a:focus-visible .tip { opacity: 1; }
+
+        /* Section headings. */
+        .section-head { max-width: 680px; margin-bottom: 40px; }
+        .section-head p { margin-top: 16px; }
+        .eyebrow { color: var(--accent); margin-bottom: 12px; }
+
+        /* Playground. */
+        .pg { position: relative; height: 720px; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; overflow: hidden; }
+        #playground-app { position: absolute; inset: 0; }
+        .skeleton { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 360px; z-index: 2; background: var(--surface);
+                    transition: opacity 500ms var(--ease); }
+        .skeleton .left { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .skeleton .right { padding: 16px; border-left: 1px solid var(--line); display: flex; flex-direction: column; gap: 16px; }
+        .sk { background: var(--raised); border-radius: 12px; animation: pulse 1600ms var(--ease) infinite; }
+        .sk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+        .sk-grid .sk { height: 96px; }
+        @keyframes pulse { 50% { opacity: 0.45; } }
+        .pg-status { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 3; width: min(420px, calc(100% - 32px));
+                     padding: 12px 16px; background: rgba(0, 0, 0, 0.8); border: 1px solid var(--line); border-radius: 16px;
+                     backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); transition: opacity 500ms var(--ease); }
+        .pg-bar { margin-top: 8px; height: 4px; border-radius: 4px; background: var(--hover); overflow: hidden; }
+        .pg-bar div { height: 100%; width: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0);
+                      transition: transform 300ms var(--ease); }
+        .pg-fallback { position: absolute; inset: 0; z-index: 4; overflow-y: auto; padding: 24px; background: var(--surface); display: none; }
+        .pg.error .pg-fallback { display: block; }
+        .fallback-grid { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+        .fallback-grid div { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 0; background: var(--raised);
+                             border-radius: 12px; color: var(--muted); }
+        .fallback-grid img { width: 40px; height: 40px; mix-blend-mode: lighten; }
+
+        /* Tagline reveal (B11). */
+        .tagline { padding: 160px 0; }
+        .tagline p { max-width: 680px; }
+        .tagline .w { color: rgba(255, 255, 255, 0.28); transition: color 600ms var(--ease); }
+        .tagline .w.on { color: var(--text); }
+
+        /* Benefits. */
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .card { padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 24px;
+                transition: transform 500ms var(--ease), background-color 300ms var(--ease); }
+        .card:hover { transform: translateY(-4px); background: var(--raised); }
+        .card .icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+                      background: var(--raised); border: 1px solid var(--line); margin-bottom: 24px; }
+        .card .icon i { font-size: 24px; color: var(--accent); }
+        .card p { margin-top: 8px; }
+
+        /* Install steps. */
+        .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .step .num { color: var(--muted); margin-bottom: 16px; }
+        .snippet { margin-top: 16px; display: flex; align-items: flex-start; gap: 8px; padding: 8px 8px 8px 12px; background: var(--black);
+                   border: 1px solid var(--line); border-radius: 12px; }
+        .snippet code { flex: 1; min-width: 0; color: var(--code); font-size: 12px; line-height: 16px; white-space: pre-wrap; word-break: break-all;
+                        padding-top: 4px; }
+        .copy { flex: none; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--raised); color: var(--text);
+                cursor: pointer; font-family: inherit; transition: background-color 300ms var(--ease), transform 300ms var(--ease); }
+        .copy:hover { background: var(--hover); }
+        .copy:active { transform: scale(0.98); }
+
+        /* FAQ. */
+        .faq { max-width: 800px; }
+        .faq details { border-bottom: 1px solid var(--line); }
+        .faq summary { list-style: none; cursor: pointer; padding: 24px 0; display: flex; justify-content: space-between; gap: 16px; }
+        .faq summary::-webkit-details-marker { display: none; }
+        .faq summary i { transition: transform 500ms var(--ease); flex: none; }
+        .faq details[open] summary i { transform: rotate(45deg); }
+        .faq details p { padding-bottom: 24px; max-width: 680px; }
+
+        /* Final call to action and footer. */
+        .final { text-align: center; }
+        .final .heading-3 { max-width: 680px; margin: 0 auto; }
+        .final .actions { margin-top: 32px; display: flex; justify-content: center; flex-wrap: wrap; gap: 16px; }
+        footer { border-top: 1px solid var(--line); padding: 40px 0; }
+        footer .row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+        footer nav { display: flex; flex-wrap: wrap; gap: 16px; }
+        footer a { color: var(--muted); text-decoration: none; transition: color 300ms var(--ease); }
+        footer a:hover { color: var(--text); }
+
+        /* Scroll reveals (B7). */
+        .reveal { opacity: 0; transform: translateY(32px); transition: opacity 700ms var(--ease), transform 700ms var(--ease); }
+        .reveal.in { opacity: 1; transform: none; }
+
+        @media (max-width: 900px) {
+            .steps { grid-template-columns: 1fr; }
+            .skeleton { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+            .skeleton .right { order: -1; border-left: 0; border-bottom: 1px solid var(--line); }
+            .skeleton .right .tall { display: none; }
+            .pg { height: 980px; }
+        }
+        @media (max-width: 767px) {
+            .wrap { padding: 0 16px; }
+            section { padding: 64px 0; }
+            .nav { left: 16px; right: 16px; transform: none; justify-content: space-between; }
+            .nav-links, .nav .btn { display: none; }
+            .menu-toggle { display: block; }
+            .hero { padding: 128px 0 48px; }
+            .heading-1 { font-size: 36px; line-height: 40px; }
+            .heading-2 { font-size: 30px; line-height: 36px; }
+            .heading-3 { font-size: 30px; line-height: 36px; }
+            .wall { grid-template-columns: repeat(4, 1fr); }
+            .wall img { width: 40px; height: 40px; }
+            .wall a:nth-child(n+13) { display: none; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .tagline { padding: 96px 0; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .reveal { transform: none; transition: opacity 300ms linear; }
+            .btn:hover, .card:hover, .wall a:hover { transform: none; }
+            .tagline .w { color: var(--text); transition: none; }
+            .menu-panel a { transform: none; }
+            .sk { animation: none; }
+        }
     </style>
     <script>
-        // Real download progress: every .wasm response is counted byte by byte as it arrives.
+        // Real download progress for the playground: every .wasm response is counted byte by byte.
         // sizes.json (written at build time) gives the exact totals, because a compressed response's
         // Content-Length is the compressed size, not the bytes the stream hands back.
         (function () {
@@ -41,25 +240,19 @@
                 .then(function (r) { return r.ok ? r.json() : {}; })
                 .catch(function () { return {}; })
                 .then(function (s) { expected = Object.keys(s).reduce(function (a, k) { return a + s[k]; }, 0); return s; });
-
             function sum(o) { var n = 0; for (var k in o) n += o[k]; return n; }
             function mb(n) { return (n / 1048576).toFixed(1); }
-
             window.__galleryProgress = function () {
                 if (done) return;
-                var got = sum(loaded);
-                var total = Math.max(expected, sum(totals), got);
-                var bar = document.getElementById('bar');
-                var status = document.getElementById('status');
+                var got = sum(loaded), total = Math.max(expected, sum(totals), got);
+                var bar = document.querySelector('.pg-bar div'), text = document.getElementById('pg-text');
                 if (!bar || !total) return;
                 var f = Math.min(1, got / total);
-                bar.style.width = (f * 100).toFixed(1) + '%';
-                status.textContent = f >= 1
-                    ? 'Starting the live gallery…'
-                    : 'Loading the live gallery so you can tap them · ' + Math.floor(f * 100) + '% · ' + mb(got) + ' / ' + mb(total) + ' MB';
+                bar.style.transform = 'scaleX(' + f.toFixed(3) + ')';
+                text.textContent = f >= 1 ? 'Starting the playground'
+                    : 'Loading the playground · ' + Math.floor(f * 100) + '% · ' + mb(got) + ' of ' + mb(total) + ' MB';
             };
             window.__galleryDone = function () { done = true; };
-
             var origFetch = window.fetch.bind(window);
             window.fetch = function (input, init) {
                 var url = typeof input === 'string' ? input : (input && input.url) || String(input);
@@ -88,76 +281,329 @@
                     return new Response(stream, { status: res.status, statusText: res.statusText, headers: res.headers });
                 });
             };
-
             window.addEventListener('error', function (e) {
-                var p = document.getElementById('preview');
-                if (!p || done) return;
+                if (done) return;
                 if (typeof WebAssembly === 'undefined' || /wasm|WebAssembly/i.test(String(e.message))) {
-                    p.classList.add('error');
-                    document.getElementById('bar').style.display = 'none';
-                    document.getElementById('status').textContent =
-                        'This browser can’t run the live gallery (it needs WebAssembly GC: Chrome 119+, Firefox 120+ or Safari 18.2+). The previews below still play.';
+                    var pg = document.querySelector('.pg');
+                    if (pg) pg.classList.add('error');
                 }
             });
         })();
     </script>
-    <script type="application/javascript" src="gallery.js"></script>
+    <script type="application/javascript" src="gallery.js" defer></script>
 </head>
 <body>
-<div id="bar"></div>
-<div id="preview">
-    <div class="wrap">
-        <h1>Compose Motion Icons</h1>
-        <p id="lead">Icons that animate between states. Pure Compose, no Lottie.</p>
-        <div id="status">Loading the live gallery so you can tap them…</div>
-        <div id="groups"></div>
-    </div>
-</div>
-<script>
-    fetch('preview/icons.json').then(function (r) { return r.json(); }).then(function (groups) {
-        var root = document.getElementById('groups');
-        var count = 0;
-        groups.forEach(function (g) {
-            var h = document.createElement('h2');
-            h.textContent = g.category;
-            var n = document.createElement('span');
-            n.textContent = g.icons.length;
-            h.appendChild(n);
-            var grid = document.createElement('div');
-            grid.className = 'grid';
-            g.icons.forEach(function (name) {
-                var card = document.createElement('div');
-                card.className = 'card';
-                var img = document.createElement('img');
-                img.src = 'preview/' + name + '.gif';
-                img.alt = name;
-                img.width = 56;
-                img.height = 56;
-                card.appendChild(img);
-                card.appendChild(document.createTextNode(name.replace(/Icon$/, '')));
-                grid.appendChild(card);
-                count++;
-            });
-            root.appendChild(h);
-            root.appendChild(grid);
-        });
-        document.getElementById('lead').textContent =
-            count + ' icons that animate between states. Pure Compose, no Lottie.';
-    }).catch(function () {});
+<a class="skip button-sm" href="#main">Skip to content</a>
 
-    new MutationObserver(function (_, observer) {
-        if (document.querySelector('canvas')) {
-            observer.disconnect();
-            window.__galleryDone && window.__galleryDone();
-            // Give Compose a moment to draw its first frame before the preview fades.
-            setTimeout(function () {
-                var p = document.getElementById('preview');
-                var bar = document.getElementById('bar');
-                if (bar) bar.remove();
-                if (p) { p.style.opacity = '0'; setTimeout(function () { p.remove(); }, 320); }
-            }, 250);
+<header class="nav" id="nav">
+    <a class="brand title-4" href="#top" aria-label="Compose Motion Icons, back to top">
+        <img src="preview/HeartIcon.gif" alt="" width="24" height="24">Motion Icons
+    </a>
+    <nav class="nav-links body-6" aria-label="Sections">
+        <a href="#playground">Playground</a>
+        <a href="#why">Why it holds up</a>
+        <a href="#install">Install</a>
+        <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-primary button-sm" href="https://github.com/zainkhalid91/compose-motion-icons"><i class="ph ph-github-logo"></i>GitHub</a>
+    <button class="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
+</header>
+<div class="menu-panel heading-4" id="menu">
+    <a href="#playground">Playground</a>
+    <a href="#why">Why it holds up</a>
+    <a href="#install">Install</a>
+    <a href="#faq">FAQ</a>
+    <a href="https://github.com/zainkhalid91/compose-motion-icons">GitHub</a>
+</div>
+
+<main id="main">
+    <section class="hero" id="top">
+        <div class="wrap">
+            <h1 class="heading-1">Icons that move<br>between states</h1>
+            <p class="sub title-2 muted">40 animated icons for Jetpack Compose and Compose Multiplatform. Pass a state and the icon animates. No Lottie files, no XML, no assets.</p>
+            <div class="actions">
+                <button class="btn btn-primary button-md" data-copy='implementation("com.github.zainkhalid91.compose-motion-icons:icons:0.3.0")'>
+                    <i class="ph ph-copy"></i><span>Copy install line</span>
+                </button>
+                <code class="install-line caption-5">compose-motion-icons:icons:0.3.0</code>
+            </div>
+            <div class="proof caption-4 muted">
+                <span><i class="ph ph-scales"></i>MIT licensed</span>
+                <span><i class="ph ph-devices"></i>Android, desktop and web</span>
+                <span><i class="ph ph-squares-four"></i>8 categories</span>
+            </div>
+            <div class="wall" id="wall" aria-label="A few of the icons, animating"></div>
+        </div>
+    </section>
+
+    <section id="playground">
+        <div class="wrap">
+            <div class="section-head reveal">
+                <p class="eyebrow title-4">Playground</p>
+                <h2 class="heading-2">Try every icon</h2>
+                <p class="title-2 muted">Hover an icon to preview its next state. Click it to try every state, colour and stroke, then copy the Kotlin.</p>
+            </div>
+            <div class="pg reveal">
+                <div id="playground-app"></div>
+                <div class="skeleton" aria-hidden="true">
+                    <div class="left">
+                        <div class="sk" style="height:40px"></div>
+                        <div class="sk" style="height:28px;width:70%"></div>
+                        <div class="sk-grid"><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>
+                    </div>
+                    <div class="right">
+                        <div class="sk" style="height:200px"></div>
+                        <div class="sk" style="height:24px;width:60%"></div>
+                        <div class="sk tall" style="height:64px"></div>
+                        <div class="sk tall" style="height:120px"></div>
+                    </div>
+                </div>
+                <div class="pg-status" role="status">
+                    <p class="caption-2" id="pg-text">Loading the playground</p>
+                    <div class="pg-bar"><div></div></div>
+                </div>
+                <div class="pg-fallback">
+                    <p class="title-3">This browser can’t run the live playground.</p>
+                    <p class="body-6 muted">It needs WebAssembly GC: Chrome 119, Firefox 120 or Safari 18.2 and newer. Here is every icon animating instead.</p>
+                    <div class="fallback-grid" id="fallback"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tagline">
+        <div class="wrap">
+            <p class="heading-3" id="tagline">Your icons already change state.<br>Now they can show it.</p>
+        </div>
+    </section>
+
+    <section id="why">
+        <div class="wrap">
+            <div class="section-head reveal">
+                <p class="eyebrow title-4">Why it holds up</p>
+                <h2 class="heading-2">Built for real screens</h2>
+            </div>
+            <div class="grid-2">
+                <article class="card reveal">
+                    <div class="icon"><i class="ph ph-moon-stars"></i></div>
+                    <h3 class="title-2">Calm on first load</h3>
+                    <p class="body-6 muted">An icon starts in the state you give it. A list of liked posts doesn’t burst into hearts as it scrolls into view. Only a change animates.</p>
+                </article>
+                <article class="card reveal">
+                    <div class="icon"><i class="ph ph-arrow-u-up-left"></i></div>
+                    <h3 class="title-2">Reverses mid motion</h3>
+                    <p class="body-6 muted">Tap twice quickly and the icon turns back from where it is, taking only the time the remaining distance needs. No jumps, no queue.</p>
+                </article>
+                <article class="card reveal">
+                    <div class="icon"><i class="ph ph-person-simple-circle"></i></div>
+                    <h3 class="title-2">Accessible by default</h3>
+                    <p class="body-6 muted">Every icon has a description that follows its state, like “Like” and “Unlike” or “Cart, 3 items”. With system animations off, icons switch instantly.</p>
+                </article>
+                <article class="card reveal">
+                    <div class="icon"><i class="ph ph-camera"></i></div>
+                    <h3 class="title-2">Stable screenshot tests</h3>
+                    <p class="body-6 muted">Wrap a screen in FreezeMotionIcons and icons jump straight to their state, so Paparazzi and Roborazzi never capture one halfway through.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section id="install">
+        <div class="wrap">
+            <div class="section-head reveal">
+                <p class="eyebrow title-4">Install</p>
+                <h2 class="heading-2">Three steps, one line each</h2>
+            </div>
+            <div class="steps">
+                <div class="card step reveal">
+                    <p class="num caption-4">Step 1</p>
+                    <h3 class="title-2">Add JitPack</h3>
+                    <p class="body-6 muted">In settings.gradle.kts, inside dependencyResolutionManagement.</p>
+                    <div class="snippet"><code>repositories { maven("https://jitpack.io") }</code><button class="copy caption-4" data-copy='maven("https://jitpack.io")'>Copy</button></div>
+                </div>
+                <div class="card step reveal">
+                    <p class="num caption-4">Step 2</p>
+                    <h3 class="title-2">Add the library</h3>
+                    <p class="body-6 muted">In your module’s build.gradle.kts.</p>
+                    <div class="snippet"><code>implementation("com.github.zainkhalid91.compose-motion-icons:icons:0.3.0")</code><button class="copy caption-4" data-copy='implementation("com.github.zainkhalid91.compose-motion-icons:icons:0.3.0")'>Copy</button></div>
+                </div>
+                <div class="card step reveal">
+                    <p class="num caption-4">Step 3</p>
+                    <h3 class="title-2">Pass your state</h3>
+                    <p class="body-6 muted">The icon animates every time the state changes.</p>
+                    <div class="snippet"><code>HeartIcon(liked = isLiked)</code><button class="copy caption-4" data-copy="HeartIcon(liked = isLiked)">Copy</button></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq">
+        <div class="wrap">
+            <div class="section-head reveal">
+                <p class="eyebrow title-4">FAQ</p>
+                <h2 class="heading-2">Questions</h2>
+            </div>
+            <div class="faq reveal">
+                <details><summary class="title-2">Do I need Lottie files or any assets?<i class="ph ph-plus"></i></summary>
+                    <p class="body-3 muted">No. Every icon is drawn in Compose code on a 24 by 24 grid. There are no JSON, XML or image files to ship.</p></details>
+                <details><summary class="title-2">Which platforms does it run on?<i class="ph ph-plus"></i></summary>
+                    <p class="body-3 muted">Android, desktop (JVM) and web (Wasm), through Compose Multiplatform. This page runs the library itself in your browser.</p></details>
+                <details><summary class="title-2">Will icons animate when a screen first opens?<i class="ph ph-plus"></i></summary>
+                    <p class="body-3 muted">No. An icon starts in the state you pass it. It only animates when that state changes afterwards.</p></details>
+                <details><summary class="title-2">Can I change the colour, size and stroke?<i class="ph ph-plus"></i></summary>
+                    <p class="body-3 muted">Yes. Each icon takes color, size and strokeWidth. Set them once for a whole screen with ProvideMotionIconStyle, which also controls the animation speed.</p></details>
+                <details><summary class="title-2">Does it respect reduced motion?<i class="ph ph-plus"></i></summary>
+                    <p class="body-3 muted">Yes. With system animations turned off, icons switch to their new state instantly, and looping icons like the equalizer stand still.</p></details>
+                <details><summary class="title-2">How do I keep screenshot tests stable?<i class="ph ph-plus"></i></summary>
+                    <p class="body-3 muted">Wrap the content in FreezeMotionIcons. Icons jump straight to their state and looping icons stop, so every capture is the same.</p></details>
+                <details><summary class="title-2">Can I use it in a commercial app?<i class="ph ph-plus"></i></summary>
+                    <p class="body-3 muted">Yes. It is MIT licensed, free for personal and commercial use.</p></details>
+                <details><summary class="title-2">How do I ask for an icon?<i class="ph ph-plus"></i></summary>
+                    <p class="body-3 muted">Open an issue on GitHub. New icons arrive in themed batches until the set reaches 50.</p></details>
+            </div>
+        </div>
+    </section>
+
+    <section class="final">
+        <div class="wrap reveal">
+            <h2 class="heading-3">Give your icons<br>something to do</h2>
+            <div class="actions">
+                <button class="btn btn-primary button-md" data-copy='implementation("com.github.zainkhalid91.compose-motion-icons:icons:0.3.0")'>
+                    <i class="ph ph-copy"></i><span>Copy install line</span>
+                </button>
+                <a class="btn btn-ghost button-md" href="https://github.com/zainkhalid91/compose-motion-icons"><i class="ph ph-github-logo"></i>View on GitHub</a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="wrap row">
+        <div>
+            <p class="title-4">Compose Motion Icons</p>
+            <p class="caption-5 muted">MIT licensed. This page sets no cookies and runs no tracking.</p>
+        </div>
+        <nav class="caption-2" aria-label="Footer">
+            <a href="https://github.com/zainkhalid91/compose-motion-icons">GitHub</a>
+            <a href="https://github.com/zainkhalid91/compose-motion-icons/blob/main/LICENSE">License</a>
+            <a href="https://github.com/zainkhalid91/compose-motion-icons/releases">Releases</a>
+            <a href="https://github.com/zainkhalid91/compose-motion-icons/issues">Request an icon</a>
+            <a href="https://github.com/zainkhalid91">@zainkhalid91</a>
+        </nav>
+    </div>
+</footer>
+
+<script>
+    (function () {
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Hero wall: well known icons from every category, as their animated previews.
+        var wallIcons = ['HeartIcon', 'MenuCloseIcon', 'PlayPauseIcon', 'ThemeIcon', 'BellIcon', 'MailIcon', 'CartIcon', 'StarIcon',
+            'LockIcon', 'GiftIcon', 'WifiIcon', 'ThumbUpIcon', 'SyncIcon', 'DownloadIcon', 'CastIcon', 'TypingIcon'];
+        var wall = document.getElementById('wall');
+        wallIcons.forEach(function (name) {
+            var a = document.createElement('a');
+            a.href = '#playground';
+            a.setAttribute('aria-label', name + ', open the playground');
+            a.innerHTML = '<img src="preview/' + name + '.gif" alt="' + name + ' animating" width="56" height="56" loading="eager">' +
+                '<span class="tip caption-5">' + name.replace(/Icon$/, '') + '</span>';
+            wall.appendChild(a);
+        });
+
+        // Copy buttons: calm, specific confirmation.
+        document.querySelectorAll('[data-copy]').forEach(function (b) {
+            b.addEventListener('click', function () {
+                var label = b.querySelector('span') || b;
+                var before = label.textContent;
+                var done = function (ok) {
+                    label.textContent = ok ? 'Copied' : 'Copy failed. Select the text instead.';
+                    setTimeout(function () { label.textContent = before; }, 1600);
+                };
+                if (navigator.clipboard) navigator.clipboard.writeText(b.dataset.copy).then(function () { done(true); }, function () { done(false); });
+                else done(false);
+            });
+        });
+
+        // Mobile menu.
+        var nav = document.getElementById('nav'), toggle = nav.querySelector('.menu-toggle');
+        var panelLinks = document.querySelectorAll('.menu-panel a');
+        function setMenu(open) {
+            document.body.classList.toggle('menu-open', open);
+            toggle.setAttribute('aria-expanded', String(open));
+            toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+            panelLinks.forEach(function (a, i) { a.style.transitionDelay = open ? Math.min(i * 60, 400) + 'ms' : '0ms'; });
         }
-    }).observe(document.body, { childList: true, subtree: true });
+        toggle.addEventListener('click', function () { setMenu(!document.body.classList.contains('menu-open')); });
+        panelLinks.forEach(function (a) { a.addEventListener('click', function () { setMenu(false); }); });
+
+        // Scroll reveals, once each.
+        var revealer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); revealer.unobserve(e.target); } });
+        }, { rootMargin: '0px 0px -10% 0px' });
+        document.querySelectorAll('.reveal').forEach(function (el) { revealer.observe(el); });
+
+        // Current section in the nav.
+        var links = {};
+        document.querySelectorAll('.nav-links a').forEach(function (a) { links[a.getAttribute('href').slice(1)] = a; });
+        var spy = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                var a = links[e.target.id];
+                if (a && e.isIntersecting) {
+                    Object.keys(links).forEach(function (k) { links[k].classList.remove('current'); links[k].removeAttribute('aria-current'); });
+                    a.classList.add('current');
+                    a.setAttribute('aria-current', 'location');
+                }
+            });
+        }, { rootMargin: '-45% 0px -50% 0px' });
+        Object.keys(links).forEach(function (id) { var s = document.getElementById(id); if (s) spy.observe(s); });
+
+        // Tagline: each word lights up as it crosses a line 60% down the viewport.
+        var tagline = document.getElementById('tagline');
+        tagline.innerHTML = tagline.innerHTML.split(/(<br>|\s+)/).map(function (part) {
+            if (part === '<br>' || /^\s+$/.test(part) || !part) return part;
+            return '<span class="w">' + part + '</span>';
+        }).join('');
+        if (!reduce) {
+            var words = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('on'); words.unobserve(e.target); } });
+            }, { rootMargin: '0px 0px -40% 0px' });
+            tagline.querySelectorAll('.w').forEach(function (w) { words.observe(w); });
+        }
+
+        // Fallback grid, only filled if the live playground can't run.
+        fetch('preview/icons.json').then(function (r) { return r.json(); }).then(function (groups) {
+            var root = document.getElementById('fallback');
+            groups.forEach(function (g) {
+                g.icons.forEach(function (name) {
+                    var d = document.createElement('div');
+                    d.className = 'caption-5';
+                    d.innerHTML = '<img src="preview/' + name + '.gif" alt="' + name + ' animating" width="40" height="40" loading="lazy">' + name.replace(/Icon$/, '');
+                    root.appendChild(d);
+                });
+            });
+        }).catch(function () {});
+
+        // Hand over from the skeleton once Compose has put its canvas in the playground. Compose
+        // mounts it inside a shadow root, which a MutationObserver on the page can't see, so look.
+        var host = document.getElementById('playground-app');
+        function findCanvas(n) {
+            if (n.tagName === 'CANVAS') return n;
+            var kids = [].concat([].slice.call(n.shadowRoot ? n.shadowRoot.children : []), [].slice.call(n.children));
+            for (var i = 0; i < kids.length; i++) { var c = findCanvas(kids[i]); if (c) return c; }
+            return null;
+        }
+        var watch = setInterval(function () {
+            if (!findCanvas(host)) return;
+            clearInterval(watch);
+            window.__galleryDone && window.__galleryDone();
+            setTimeout(function () {
+                ['.skeleton', '.pg-status'].forEach(function (sel) {
+                    var el = document.querySelector(sel);
+                    if (el) { el.style.opacity = '0'; setTimeout(function () { el.remove(); }, 520); }
+                });
+            }, 400);
+        }, 200);
+    })();
 </script>
 </body>
 </html>

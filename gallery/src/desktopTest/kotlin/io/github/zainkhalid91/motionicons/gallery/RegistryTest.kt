@@ -45,6 +45,19 @@ class RegistryTest {
     }
 
     @Test
+    fun playgroundTextMatchesTheRegistry() {
+        val rows = File(root, "ICONS.md").readLines()
+            .mapNotNull { Regex("""^\|\s*\d+\s*\|\s*`?(\w+)`?\s*\|[^|]*\|\s*([^|]+?)\s*\|""").find(it) }
+            .associate { it.groupValues[1] to it.groupValues[2] }
+        for (e in IconCatalog.entries) {
+            assertEquals(rows[e.name], IconText.motion[e.name], "motion text of ${e.name}")
+            // Every state has code, and each step's code is different.
+            val codes = (0 until e.steps).map { IconText.state(e.name, it) }
+            assertEquals(e.steps, codes.toSet().size, "state code of ${e.name}: $codes")
+        }
+    }
+
+    @Test
     fun webPreviewIsUpToDate() {
         // The web page shows these GIFs while the live gallery loads. Re-run recordFrames and
         // tools/make-media.sh after adding an icon.

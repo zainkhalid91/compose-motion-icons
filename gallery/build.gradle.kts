@@ -77,6 +77,7 @@ tasks.named("wasmJsBrowserDistribution") {
         val preview = File(dist, "preview").apply { mkdirs() }
         media.listFiles { f -> f.name.endsWith("Icon.gif") || f.name == "icons.json" }.orEmpty()
             .forEach { it.copyTo(File(preview, it.name), overwrite = true) }
+        File(media, "og.png").copyTo(File(dist, "og.png"), overwrite = true)
         val wasm = dist.listFiles { f -> f.extension == "wasm" }.orEmpty().sortedBy { it.name }
         File(dist, "sizes.json").writeText(wasm.joinToString(",", "{", "}") { "\"${it.name}\":${it.length()}" })
     }
